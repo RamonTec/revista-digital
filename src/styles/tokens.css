@@ -1,39 +1,39 @@
 /* ============================================================
    tokens.css — Sistema de diseño de la revista BDD
-   Paleta, tipografía, espaciado, breakpoints, sombras
+   Paleta premium (Obsidian & Indigo/Rose), tipografía, espaciado
    ============================================================ */
 
 :root {
-  /* === Color: fondo editorial oscuro === */
-  --c-bg-primario: #0f1419;
-  --c-bg-secundario: #1a2332;
-  --c-bg-terciario: #243044;
-  --c-bg-codigo: #161b22;
+  /* === Color: fondo editorial oscuro (Zinc/Obsidian) === */
+  --c-bg-primario: #09090b;
+  --c-bg-secundario: #18181b;
+  --c-bg-terciario: #27272a;
+  --c-bg-codigo: #111113;
 
-  /* === Color: acentos === */
-  --c-acento: #00d9a3;
-  --c-acento-hover: #00f5b8;
-  --c-acento-alt: #4d9eff;
-  --c-acento-alt-hover: #6db5ff;
+  /* === Color: acentos (Indigo & Rose) === */
+  --c-acento: #6366f1;
+  --c-acento-hover: #818cf8;
+  --c-acento-alt: #f43f5e;
+  --c-acento-alt-hover: #fb7185;
 
   /* === Color: texto === */
-  --c-texto: #e6edf3;
-  --c-texto-dim: #8b949e;
-  --c-texto-muted: #6e7681;
+  --c-texto: #fafafa;
+  --c-texto-dim: #a1a1aa;
+  --c-texto-muted: #71717a;
 
   /* === Color: semánticos === */
-  --c-sql: #ffa657;
-  --c-warn: #f0883e;
-  --c-error: #ff6b6b;
-  --c-info: #4d9eff;
-  --c-success: #00d9a3;
+  --c-sql: #fbbf24;
+  --c-warn: #f59e0b;
+  --c-error: #ef4444;
+  --c-info: #3b82f6;
+  --c-success: #10b981;
 
   /* === Color: bordes === */
-  --c-borde: #2d3b4f;
-  --c-borde-activo: #3d5169;
+  --c-borde: #27272a;
+  --c-borde-activo: #3f3f46;
 
   /* === Tipografía === */
-  --font-display: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
@@ -48,7 +48,7 @@
   --fs-4xl: 3.5rem;
   --fs-display: 5rem;
 
-  --lh-tight: 1.2;
+  --lh-tight: 1.15;
   --lh-normal: 1.6;
   --lh-relaxed: 1.8;
 
@@ -78,17 +78,17 @@
   --content-wide: 1200px;
 
   /* === Radios === */
-  --r-sm: 4px;
-  --r-md: 8px;
-  --r-lg: 16px;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 18px;
   --r-full: 9999px;
 
   /* === Sombras === */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px rgba(0, 217, 163, 0.15);
-  --shadow-glow-alt: 0 0 20px rgba(77, 158, 255, 0.15);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 24px rgba(99, 102, 241, 0.2);
+  --shadow-glow-alt: 0 0 24px rgba(244, 63, 94, 0.2);
 
   /* === Transiciones === */
   --t-fast: 150ms ease;
@@ -106,28 +106,27 @@
 /* === Modo claro alternativo === */
 @media (prefers-color-scheme: light) {
   :root {
-    --c-bg-primario: #fafbfc;
-    --c-bg-secundario: #ffffff;
-    --c-bg-terciario: #f0f2f5;
-    --c-bg-codigo: #f6f8fa;
-    --c-texto: #1f2328;
-    --c-texto-dim: #59636e;
-    --c-texto-muted: #818b98;
-    --c-borde: #d0d7de;
-    --c-borde-activo: #afb8c1;
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
-    --shadow-glow: 0 0 20px rgba(0, 217, 163, 0.1);
-    --shadow-glow-alt: 0 0 20px rgba(77, 158, 255, 0.1);
+    --c-bg-primario: #ffffff;
+    --c-bg-secundario: #f4f4f5;
+    --c-bg-terciario: #e4e4e7;
+    --c-bg-codigo: #fafafa;
+    
+    --c-acento: #4f46e5;
+    --c-acento-hover: #4338ca;
+    --c-acento-alt: #e11d48;
+    --c-acento-alt-hover: #be123c;
+
+    --c-texto: #09090b;
+    --c-texto-dim: #52525b;
+    --c-texto-muted: #a1a1aa;
+    
+    --c-borde: #e4e4e7;
+    --c-borde-activo: #d4d4d8;
+    
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+    --shadow-glow: 0 0 20px rgba(79, 70, 229, 0.15);
+    --shadow-glow-alt: 0 0 20px rgba(225, 29, 72, 0.15);
   }
 }
-
-/* === Breakpoints (referencia, uso con media queries) === */
-/*
-  --bp-sm:  640px
-  --bp-md:  768px
-  --bp-lg:  1024px
-  --bp-xl:  1280px
-  --bp-2xl: 1440px
-*/

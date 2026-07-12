@@ -62,7 +62,7 @@ button {
 }
 
 ::selection {
-  background: rgba(0, 217, 163, 0.25);
+  background: rgba(99, 102, 241, 0.25);
   color: var(--c-texto);
 }
 

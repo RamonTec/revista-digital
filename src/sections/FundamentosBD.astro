@@ -22,15 +22,15 @@ import Callout from '../components/Callout.astro';
       de datos relacionados entre sí, almacenado de forma que permita
       <em>consultar</em>, <em>actualizar</em> y <em>gestionar</em> la
       información de manera eficiente. Para gestionarla se utiliza un
-      <strong>SGBD</strong> (Sistema de Gestión de Bases de Datos), como
+      <strong> SGBD</strong> (Sistema de Gestión de Bases de Datos), como
       PostgreSQL, MySQL, MongoDB o Redis, que actúa como intermediario
       entre los datos físicos y las aplicaciones.
     </p>
 
     <p>
-      La evolución histórica fue desde los <em>ficheros secuenciales</em>
+      La evolución histórica fue desde los <em>ficheros secuenciales </em>
       de los años 60, pasando por el <em>modelo jerárquico</em> y el
-      <em>modelo en red</em>, hasta llegar al <em>modelo relacional</em>
+      <em>modelo en red</em>, hasta llegar al <em>modelo relacional </em>
       propuesto por Edgar F. Codd en 1970, que hoy sigue siendo el
       estándar dominante.
     </p>
@@ -38,9 +38,9 @@ import Callout from '../components/Callout.astro';
     <Callout tipo="info" titulo="Diferencia clave">
       <p>
         La <strong>base de datos</strong> es el conjunto de datos. El
-        <strong>SGBD</strong> es el software que los administra. PostgreSQL
+        <strong> SGBD</strong> es el software que los administra. PostgreSQL
         es un SGBD; la base de datos es lo que tú creas dentro de él con
-        <code>CREATE DATABASE</code>.
+        <code> CREATE DATABASE</code>.
       </p>
     </Callout>
   </section>
@@ -109,7 +109,7 @@ import Callout from '../components/Callout.astro';
         <h3 class="texto-alt">Vectoriales</h3>
         <p>
           Almacena <em>embeddings</em> (vectores numéricos) y mide
-          <strong>similitud semántica</strong>. Ejemplos: pgvector,
+          <strong> similitud semántica</strong>. Ejemplos: pgvector,
           Qdrant, ChromaDB. Ideales para IA, RAG y búsqueda semántica.
         </p>
       </div>
@@ -202,7 +202,7 @@ import Callout from '../components/Callout.astro';
     <p>
       Una <strong>transacción</strong> es una unidad de trabajo que se
       ejecuta completamente o no se ejecuta en absoluto. Las propiedades
-      <strong>ACID</strong>, formuladas por Andreas Reuter y Theo Härder
+      <strong> ACID</strong>, formuladas por Andreas Reuter y Theo Härder
       en 1983, garantizan la fiabilidad de las transacciones incluso ante
       fallos del sistema.
     </p>
@@ -227,7 +227,7 @@ import Callout from '../components/Callout.astro';
           <h3>Consistencia</h3>
           <p>
             La transacción lleva la base de datos de un estado
-            <strong>válido</strong> a otro estado <strong>válido</strong>.
+            <strong> válido</strong> a otro estado <strong>válido</strong>.
             Todas las reglas de integridad (constraints, claves, dominios)
             se respetan antes y después.
           </p>
@@ -253,7 +253,7 @@ import Callout from '../components/Callout.astro';
           <h3>Durabilidad</h3>
           <p>
             Una vez confirmada (<code>COMMIT</code>), los cambios
-            <strong>persisten</strong> incluso ante caídas de energía o
+            <strong> persisten</strong> incluso ante caídas de energía o
             fallos del sistema. Se garantiza con el <em>WAL</em> (Write
             Ahead Log).
           </p>

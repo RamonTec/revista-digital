@@ -31,6 +31,9 @@
   justify-content: center;
   width: 100%;
   flex: 1;
+  /* min-height: 0 es clave en flexbox para que el hijo pueda encogerse */
+  /* y no desborde el contenedor padre */
+  min-height: 0;
   position: relative;
   perspective: 2000px;
 }
@@ -41,8 +44,7 @@
 .page-flip-root {
   position: relative;
   width: 100%;
-  max-width: 900px;
-  aspect-ratio: 4 / 3;
+  height: 100%;
 }
 
 /* === Cada hoja del flipbook === */
@@ -177,6 +179,8 @@
   border-radius: var(--r-full);
   box-shadow: var(--shadow-md);
   z-index: 10;
+  /* No encoger: el container toma el espacio restante */
+  flex-shrink: 0;
 }
 
 .flip-btn {
@@ -356,6 +360,8 @@
     min-height: 100dvh;
     height: 100vh;
     height: 100dvh;
+    /* overflow hidden para evitar scroll del body */
+    overflow: hidden;
   }
 
   /* Mostrar botones de navegación táctiles flotantes */
@@ -363,14 +369,16 @@
     display: flex;
   }
 
-  .page-flip-root {
-    aspect-ratio: auto;
+  /* El contenedor toma todo el espacio restante (flex: 1 + min-height: 0) */
+  .flipbook-container {
     width: 100%;
-    height: 100%;
-    max-width: 100vw;
+    flex: 1;
+    min-height: 0;
+    /* Quitamos height: 100% que no funciona bien en flex column */
   }
 
-  .flipbook-container {
+  /* La raíz de PageFlip llena el contenedor */
+  .page-flip-root {
     width: 100%;
     height: 100%;
   }
@@ -422,10 +430,8 @@
 
 @media (max-width: 480px) {
   .page-flip-root {
-    aspect-ratio: auto;
     width: 100%;
     height: 100%;
-    max-width: 100vw;
   }
 
   .hoja-contenido .grid-2-col,
@@ -462,10 +468,8 @@
 /* === Pantallas muy pequeñas (≤360px) === */
 @media (max-width: 360px) {
   .page-flip-root {
-    aspect-ratio: auto;
     width: 100%;
     height: 100%;
-    max-width: 100vw;
   }
 
   .flipbook-app {
@@ -484,20 +488,18 @@
   }
 }
 
-/* === Desktop (≥769px): aspect-ratio más alto para más espacio vertical === */
-/* En landscape, StPageFlip muestra 2 páginas. Con 3/2 en lugar de 4/3, */
-/* cada página tiene más altura para el contenido. */
+/* === Desktop (≥769px): ocupar el contenedor sin límite === */
 @media (min-width: 769px) {
   .page-flip-root {
-    aspect-ratio: 3 / 2;
-    max-width: 1000px;
+    width: 100%;
+    height: 100%;
   }
 }
 
 @media (min-width: 1024px) {
   .page-flip-root {
-    aspect-ratio: 16 / 10;
-    max-width: 1100px;
+    width: 100%;
+    height: 100%;
   }
 }
 
@@ -506,5 +508,63 @@
   .flip-indice-panel,
   .flip-indice-overlay {
     transition: none;
+  }
+}
+
+/* === Botones Laterales (Desktop/Tablet) === */
+.flip-side-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--c-bg-secundario);
+  color: var(--c-texto);
+  border: 1px solid var(--c-borde);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: none; /* Ocultos en móvil por defecto para no tapar contenido */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 50;
+  box-shadow: var(--shadow-md);
+  transition: all var(--t-fast);
+  opacity: 0.5;
+}
+
+.flip-side-btn:hover:not(:disabled) {
+  background: var(--c-acento);
+  color: var(--c-bg-primario);
+  border-color: var(--c-acento);
+  opacity: 1;
+}
+
+.flip-side-btn:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .flip-side-btn {
+    display: flex;
+  }
+  .flip-side-prev {
+    left: var(--sp-4);
+  }
+  .flip-side-next {
+    right: var(--sp-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .flip-side-btn {
+    width: 64px;
+    height: 64px;
+  }
+  .flip-side-prev {
+    left: var(--sp-8);
+  }
+  .flip-side-next {
+    right: var(--sp-8);
   }
 }

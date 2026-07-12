@@ -23,16 +23,16 @@ import Callout from '../components/Callout.astro';
       Las <strong>bases de datos vectoriales</strong> han pasado de ser una
       curiosidad de nicho a convertirse en infraestructura esencial para
       cualquier aplicación que integre IA generativa. Sistemas como
-      <em>pgvector</em> (extensión de PostgreSQL), <em>Qdrant</em> y
-      <em>ChromaDB</em> permiten almacenar <em>embeddings</em> y realizar
+      <em> pgvector</em> (extensión de PostgreSQL), <em>Qdrant</em> y
+      <em> ChromaDB</em> permiten almacenar <em>embeddings</em> y realizar
       búsquedas semánticas en tiempo real.
     </p>
 
     <p>
       La clave está en que estas bases no reemplazan a las relacionales, sino
       que las <strong>complementan</strong>. El patrón emergente es
-      <em>híbrido</em>: PostgreSQL para datos estructurados con
-      <code>pgvector</code> para similitud semántica en la misma instancia.
+      <em> híbrido</em>: PostgreSQL para datos estructurados con
+      <code> pgvector</code> para similitud semántica en la misma instancia.
     </p>
 
     <Callout tipo="info" titulo="Caso de uso">
@@ -59,12 +59,12 @@ import Callout from '../components/Callout.astro';
       latencia. En lugar de centralizar todo en un único datacenter, las
       aplicaciones modernas replican datos geográficamente cerca del usuario.
       Herramientas como <em>Cloudflare D1</em>, <em>Turso</em> (libSQL) y
-      <em>Neon</em> (PostgreSQL serverless) llevan la base de datos al borde.
+      <em> Neon</em> (PostgreSQL serverless) llevan la base de datos al borde.
     </p>
 
     <p>
       El desafío técnico sigue siendo el mismo de siempre:
-      <strong>consistencia vs. disponibilidad</strong>. El teorema CAP no
+      <strong> consistencia vs. disponibilidad</strong>. El teorema CAP no
       perdona, pero las nuevas herramientas abstraen gran parte de la
       complejidad de la replicación.
     </p>
@@ -73,7 +73,7 @@ import Callout from '../components/Callout.astro';
       <p>
         Mover la base al edge reduce latencia de lectura, pero introduce
         complejidad en las escrituras. Evalúa si tu patrón de acceso es
-        <em>read-heavy</em> antes de adoptar esta arquitectura.
+        <em> read-heavy</em> antes de adoptar esta arquitectura.
       </p>
     </Callout>
   </section>
@@ -97,7 +97,7 @@ import Callout from '../components/Callout.astro';
     <p>
       La tendencia actual es la integración nativa con pipelines CI/CD:
       las especificaciones BDD no solo validan, sino que generan
-      <strong>documentación viva</strong> del comportamiento del sistema.
+      <strong> documentación viva</strong> del comportamiento del sistema.
     </p>
 
     <Callout tipo="success" titulo="Beneficio real">
