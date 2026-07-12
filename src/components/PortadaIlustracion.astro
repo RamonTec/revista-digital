@@ -1,0 +1,306 @@
+---
+// ============================================================
+// PortadaIlustracion.astro — Ilustración vectorial de portada
+// Red de nodos hexagonales conectados (metáfora de BDD + datos)
+// SVG inline: escalable, ligero, animable, responsive
+// ============================================================
+---
+
+<div class="portada-ilustracion" aria-hidden="true">
+  <svg
+    class="portada-ilustracion__svg"
+    viewBox="0 0 800 600"
+    preserveAspectRatio="xMidYMid slice"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <defs>
+      <!-- Gradiente principal verde-azul -->
+      <linearGradient id="grad-nodo" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#00d9a3" stop-opacity="0.25" />
+        <stop offset="100%" stop-color="#4d9eff" stop-opacity="0.15" />
+      </linearGradient>
+
+      <!-- Gradiente para el nodo central destacado -->
+      <radialGradient id="grad-central" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#00d9a3" stop-opacity="0.35" />
+        <stop offset="60%" stop-color="#00d9a3" stop-opacity="0.1" />
+        <stop offset="100%" stop-color="#00d9a3" stop-opacity="0" />
+      </radialGradient>
+
+      <!-- Gradiente de líneas de conexión -->
+      <linearGradient id="grad-linea" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#00d9a3" stop-opacity="0" />
+        <stop offset="50%" stop-color="#00d9a3" stop-opacity="0.4" />
+        <stop offset="100%" stop-color="#4d9eff" stop-opacity="0" />
+      </linearGradient>
+
+      <!-- Glow suave -->
+      <filter id="glow-suave" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="3" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+
+      <!-- Símbolo de hexágono reutilizable -->
+      <symbol id="hex" viewBox="-50 -50 100 100" overflow="visible">
+        <polygon
+          points="-43.3,-25 0,-50 43.3,-25 43.3,25 0,50 -43.3,25"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+        />
+      </symbol>
+
+      <!-- Símbolo de hexágono relleno (nodo destacado) -->
+      <symbol id="hex-fill" viewBox="-50 -50 100 100" overflow="visible">
+        <polygon
+          points="-43.3,-25 0,-50 43.3,-25 43.3,25 0,50 -43.3,25"
+          fill="url(#grad-nodo)"
+          stroke="currentColor"
+          stroke-width="1.5"
+        />
+      </symbol>
+    </defs>
+
+    <!-- === Anillos concéntricos sutiles (fondo estructural) === -->
+    <g class="ilustracion-anillos" stroke="#4d9eff" stroke-opacity="0.08" fill="none">
+      <circle cx="560" cy="300" r="80" stroke-width="1" />
+      <circle cx="560" cy="300" r="140" stroke-width="1" />
+      <circle cx="560" cy="300" r="210" stroke-width="1" stroke-dasharray="4 6" />
+      <circle cx="560" cy="300" r="280" stroke-width="1" stroke-dasharray="2 8" />
+    </g>
+
+    <!-- === Resplandor central === -->
+    <circle cx="560" cy="300" r="160" fill="url(#grad-central)" />
+
+    <!-- === Líneas de conexión (capa intermedia) === -->
+    <g class="ilustracion-conexiones" stroke-width="1">
+      <!-- Conexiones desde el nodo central hacia periferia -->
+      <line x1="560" y1="300" x2="380" y2="180" stroke="url(#grad-linea)" class="conexion conexion-1" />
+      <line x1="560" y1="300" x2="720" y2="200" stroke="url(#grad-linea)" class="conexion conexion-2" />
+      <line x1="560" y1="300" x2="700" y2="440" stroke="url(#grad-linea)" class="conexion conexion-3" />
+      <line x1="560" y1="300" x2="420" y2="460" stroke="url(#grad-linea)" class="conexion conexion-4" />
+      <line x1="560" y1="300" x2="260" y2="340" stroke="url(#grad-linea)" class="conexion conexion-5" />
+
+      <!-- Conexiones secundarias entre nodos periféricos -->
+      <line x1="380" y1="180" x2="260" y2="340" stroke="#4d9eff" stroke-opacity="0.12" />
+      <line x1="720" y1="200" x2="700" y2="440" stroke="#00d9a3" stroke-opacity="0.1" />
+      <line x1="420" y1="460" x2="260" y2="340" stroke="#4d9eff" stroke-opacity="0.1" />
+      <line x1="380" y1="180" x2="720" y2="200" stroke="#00d9a3" stroke-opacity="0.08" />
+    </g>
+
+    <!-- === Nodos hexagonales (capa principal) === -->
+    <g class="ilustracion-nodos">
+      <!-- Nodo central destacado (más grande) -->
+      <g class="nodo nodo-central" transform="translate(560 300)">
+        <g class="nodo__pulso">
+          <use href="#hex-fill" width="110" height="110" x="-55" y="-55" color="#00d9a3" filter="url(#glow-suave)" />
+        </g>
+        <use href="#hex" width="80" height="80" x="-40" y="-40" color="#00d9a3" stroke-opacity="0.6" />
+        <!-- Punto central -->
+        <circle r="4" fill="#00d9a3" />
+      </g>
+
+      <!-- Nodos periféricos -->
+      <g class="nodo nodo-1" transform="translate(380 180)">
+        <use href="#hex" width="56" height="56" x="-28" y="-28" color="#4d9eff" stroke-opacity="0.45" />
+        <circle r="3" fill="#4d9eff" fill-opacity="0.7" />
+      </g>
+
+      <g class="nodo nodo-2" transform="translate(720 200)">
+        <use href="#hex-fill" width="64" height="64" x="-32" y="-32" color="#00d9a3" />
+        <use href="#hex" width="48" height="48" x="-24" y="-24" color="#00d9a3" stroke-opacity="0.5" />
+        <circle r="3" fill="#00d9a3" fill-opacity="0.8" />
+      </g>
+
+      <g class="nodo nodo-3" transform="translate(700 440)">
+        <use href="#hex" width="56" height="56" x="-28" y="-28" color="#4d9eff" stroke-opacity="0.4" />
+        <circle r="2.5" fill="#4d9eff" fill-opacity="0.6" />
+      </g>
+
+      <g class="nodo nodo-4" transform="translate(420 460)">
+        <use href="#hex" width="60" height="60" x="-30" y="-30" color="#00d9a3" stroke-opacity="0.35" />
+        <circle r="3" fill="#00d9a3" fill-opacity="0.5" />
+      </g>
+
+      <g class="nodo nodo-5" transform="translate(260 340)">
+        <use href="#hex-fill" width="52" height="52" x="-26" y="-26" color="#4d9eff" />
+        <circle r="2.5" fill="#4d9eff" fill-opacity="0.7" />
+      </g>
+
+      <!-- Nodos pequeños decorativos (sin hexágono, solo puntos) -->
+      <g class="ilustracion-puntos" fill="#00d9a3" fill-opacity="0.4">
+        <circle cx="180" cy="120" r="2" class="punto punto-1" />
+        <circle cx="660" cy="100" r="1.5" class="punto punto-2" />
+        <circle cx="150" cy="450" r="2" class="punto punto-3" />
+        <circle cx="500" cy="540" r="1.5" class="punto punto-4" />
+        <circle cx="750" cy="340" r="1.5" class="punto punto-5" />
+        <circle cx="320" cy="520" r="2" class="punto punto-6" />
+      </g>
+    </g>
+
+    <!-- === Partículas flotantes (capa de ambiente) === -->
+    <g class="ilustracion-particulas" fill="#00d9a3">
+      <circle cx="200" cy="200" r="1" class="particula particula-1" fill-opacity="0.5" />
+      <circle cx="640" cy="160" r="1.5" class="particula particula-2" fill-opacity="0.4" />
+      <circle cx="480" cy="380" r="1" class="particula particula-3" fill-opacity="0.5" />
+      <circle cx="340" cy="260" r="1" class="particula particula-4" fill-opacity="0.3" />
+      <circle cx="620" cy="500" r="1.5" class="particula particula-5" fill-opacity="0.4" />
+    </g>
+  </svg>
+</div>
+
+<style>
+  .portada-ilustracion {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .portada-ilustracion__svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    /* La ilustración se desplaza hacia la derecha en desktop para no competir */
+    /* con el contenido textual alineado a la izquierda */
+    opacity: 0.9;
+  }
+
+  /* === Animaciones: pulsos y flujos sutiles === */
+
+  /* Nodo central: pulso respiración */
+  .nodo__pulso {
+    transform-origin: center;
+    animation: pulso-nodo 4s ease-in-out infinite;
+  }
+
+  @keyframes pulso-nodo {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.08); opacity: 1; }
+  }
+
+  /* Nodos periféricos: parpadeo escalonado */
+  .nodo-1 { animation: parpadeo-nodo 5s ease-in-out infinite; }
+  .nodo-2 { animation: parpadeo-nodo 5s ease-in-out infinite 1s; }
+  .nodo-3 { animation: parpadeo-nodo 5s ease-in-out infinite 2s; }
+  .nodo-4 { animation: parpadeo-nodo 5s ease-in-out infinite 1.5s; }
+  .nodo-5 { animation: parpadeo-nodo 5s ease-in-out infinite 2.5s; }
+
+  @keyframes parpadeo-nodo {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  /* Líneas de conexión: flujo de datos */
+  .conexion {
+    stroke-dasharray: 6 4;
+    animation: flujo-conexion 3s linear infinite;
+  }
+  .conexion-1 { animation-delay: 0s; }
+  .conexion-2 { animation-delay: 0.6s; }
+  .conexion-3 { animation-delay: 1.2s; }
+  .conexion-4 { animation-delay: 1.8s; }
+  .conexion-5 { animation-delay: 2.4s; }
+
+  @keyframes flujo-conexion {
+    from { stroke-dashoffset: 0; }
+    to { stroke-dashoffset: -20; }
+  }
+
+  /* Partículas: flotación vertical lenta */
+  .particula {
+    animation: flotacion-particula 8s ease-in-out infinite;
+  }
+  .particula-1 { animation-delay: 0s; }
+  .particula-2 { animation-delay: 1.5s; }
+  .particula-3 { animation-delay: 3s; }
+  .particula-4 { animation-delay: 4.5s; }
+  .particula-5 { animation-delay: 6s; }
+
+  @keyframes flotacion-particula {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  /* Puntos decorativos: parpadeo muy sutil */
+  .punto {
+    animation: parpadeo-punto 6s ease-in-out infinite;
+  }
+  .punto-1 { animation-delay: 0s; }
+  .punto-2 { animation-delay: 1s; }
+  .punto-3 { animation-delay: 2s; }
+  .punto-4 { animation-delay: 3s; }
+  .punto-5 { animation-delay: 4s; }
+  .punto-6 { animation-delay: 5s; }
+
+  @keyframes parpadeo-punto {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+  }
+
+  /* Anillos: rotación muy lenta */
+  .ilustracion-anillos {
+    transform-origin: 560px 300px;
+    animation: rotacion-anillos 60s linear infinite;
+  }
+
+  @keyframes rotacion-anillos {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* === Responsive === */
+
+  /* En móvil: la ilustración se centra y atenúa más */
+  @media (max-width: 768px) {
+    .portada-ilustracion__svg {
+      opacity: 0.6;
+      /* Ligeramente escalado para enfoque en el centro */
+      transform: scale(1.15);
+      transform-origin: center;
+    }
+
+    /* Animaciones más lentas en móvil para ahorrar batería */
+    .nodo__pulso,
+    .nodo-1, .nodo-2, .nodo-3, .nodo-4, .nodo-5 {
+      animation-duration: 8s;
+    }
+    .conexion {
+      animation-duration: 5s;
+    }
+    .particula {
+      animation-duration: 12s;
+    }
+    .ilustracion-anillos {
+      animation-duration: 90s;
+    }
+  }
+
+  /* En móvil pequeño: simplificar (ocultar partículas y puntos) */
+  @media (max-width: 480px) {
+    .ilustracion-particulas,
+    .ilustracion-puntos {
+      display: none;
+    }
+
+    .portada-ilustracion__svg {
+      opacity: 0.5;
+    }
+  }
+
+  /* === prefers-reduced-motion: desactivar animaciones === */
+  @media (prefers-reduced-motion: reduce) {
+    .nodo__pulso,
+    .nodo-1, .nodo-2, .nodo-3, .nodo-4, .nodo-5,
+    .conexion,
+    .particula,
+    .punto,
+    .ilustracion-anillos {
+      animation: none;
+    }
+  }
+</style>

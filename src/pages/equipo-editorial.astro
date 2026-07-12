@@ -1,0 +1,14 @@
+---
+import RevistaLayout from '../layouts/RevistaLayout.astro';
+import NavPaginas from '../components/NavPaginas.astro';
+import EquipoEditorial from '../sections/EquipoEditorial.astro';
+---
+
+<RevistaLayout
+  titulo="Equipo Editorial"
+  seccionActiva="equipo-editorial"
+  descripcion="Las personas detrás de esta edición"
+>
+  <EquipoEditorial />
+  <NavPaginas actual="equipo-editorial" />
+</RevistaLayout>

@@ -1,5 +1,5 @@
 ---
-// arquitectura-modelado.astro — Principios de arquitectura y modelado
+// modelado-de-datos.astro — Modelado de datos + cápsula + adivinanzas + curiosidades
 import SectionHeader from '../components/SectionHeader.astro';
 import Mermaid from '../components/Mermaid.astro';
 import Callout from '../components/Callout.astro';
@@ -7,108 +7,11 @@ import Callout from '../components/Callout.astro';
 
 <div class="hoja-contenido">
 <SectionHeader
-    numero="04"
-    titulo="Arquitectura y Modelado"
-    descripcion="Del comportamiento a la estructura: principios de diseño y modelado de datos"
+    numero="06"
+    titulo="Modelado de Datos"
+    descripcion="Del concepto a la tabla: principios, modelos e innovación en bases de datos"
     categoria="teoria"
   />
-
-  <!-- === Arquitectura por capas === -->
-  <section data-reveal>
-    <h2>Arquitectura por capas: separación de responsabilidades</h2>
-
-    <p>
-      Una arquitectura <strong>por capas</strong> organiza el software en
-      niveles con responsabilidades claras. Cada capa depende solo de la
-      inmediatamente inferior, lo que reduce el acoplamiento y facilita
-      el cambio. En el contexto de un sistema con base de datos, el patrón
-      más común es la <em>arquitectura en 3 capas</em>.
-    </p>
-
-    <Mermaid
-      caption="Figura 4.1 — Arquitectura en 3 capas con flujo de dependencia descendente"
-      diagram={`flowchart TB
-        subgraph Presentacion ["Capa de Presentación"]
-          P["UI / API REST / Controladores"]
-        end
-
-        subgraph Dominio ["Capa de Dominio / Lógica"]
-          D1["Servicios de aplicación"]
-          D2["Reglas de negocio"]
-          D3["Casos de uso (BDD)"]
-        end
-
-        subgraph Persistencia ["Capa de Persistencia"]
-          PS1["Repositorios"]
-          PS2["ORM / DAO"]
-          PS3["Base de datos"]
-        end
-
-        Presentacion --> Dominio
-        Dominio --> Persistencia
-
-        style Presentacion fill:#0f1419,stroke:#00d9a3,color:#e6edf3
-        style Dominio fill:#0f1419,stroke:#4d9eff,color:#e6edf3
-        style Persistencia fill:#0f1419,stroke:#ffa657,color:#e6edf3`}
-    />
-
-    <Callout tipo="warn" titulo="Regla de oro">
-      <p>
-        Las dependencias fluyen <strong>solo hacia abajo</strong>. La capa
-        de presentación nunca accede directamente a la base de datos, y la
-        capa de persistencia no conoce las reglas de negocio.
-      </p>
-    </Callout>
-  </section>
-
-  <hr />
-
-  <!-- === Arquitectura hexagonal === -->
-  <section data-reveal>
-    <h2>Arquitectura hexagonal (Ports & Adapters)</h2>
-
-    <p>
-      La <strong>arquitectura hexagonal</strong>, propuesta por Alistair
-      Cockburn, aísla el dominio de las tecnologías externas mediante
-      <em>ports</em> (interfaces) y <em>adapters</em> (implementaciones).
-      El dominio no sabe si se conecta a PostgreSQL, MongoDB o una API
-      externa: solo define qué necesita.
-    </p>
-
-    <Mermaid
-      caption="Figura 4.2 — Arquitectura hexagonal: el dominio en el centro, los adaptadores en los bordes"
-      diagram={`flowchart LR
-        subgraph Driving ["Adaptadores driving (entrada)"]
-          R["API REST"]
-          C["Consola CLI"]
-          T["Tests BDD"]
-        end
-
-        subgraph Core ["Núcleo de dominio"]
-          P["Ports\n(interfaces)"]
-          A["Aplicación\n(casos de uso)"]
-          D["Modelo de dominio"]
-        end
-
-        subgraph Driven ["Adaptadores driven (salida)"]
-          SQL["PostgreSQL"]
-          MONGO["MongoDB"]
-          CACHE["Redis"]
-        end
-
-        Driving --> P
-        P --> A
-        A --> D
-        A --> P
-        P --> Driven
-
-        style Core fill:#0f1419,stroke:#00d9a3,color:#e6edf3,stroke-width:2px
-        style Driving fill:#0f1419,stroke:#4d9eff,color:#e6edf3
-        style Driven fill:#0f1419,stroke:#ffa657,color:#e6edf3`}
-    />
-  </section>
-
-  <hr />
 
   <!-- === Modelado de datos === -->
   <section data-reveal>
@@ -149,6 +52,15 @@ import Callout from '../components/Callout.astro';
         </p>
       </div>
     </div>
+
+    <Callout tipo="info" titulo="Curiosidad">
+      <p>
+        El primer modelo de datos de la historia no fue digital: era un
+        conjunto de <strong>fichas perforadas</strong> que Herman Hollerith
+        usó en el censo de EE. UU. de 1890. ¡Esa «base de datos» procesó
+        datos de 62 millones de personas sin un solo transistor!
+      </p>
+    </Callout>
   </section>
 
   <hr />
@@ -164,7 +76,7 @@ import Callout from '../components/Callout.astro';
     </p>
 
     <Mermaid
-      caption="Figura 4.3 — Diagrama ER de ejemplo: Socio, Libro y Préstamo"
+      caption="Figura 4.1 — Diagrama ER de ejemplo: Socio, Libro y Préstamo"
       diagram={`erDiagram
         SOCIO ||--o{ PRESTAMO : "realiza"
         LIBRO ||--o{ PRESTAMO : "es objeto de"
@@ -204,12 +116,82 @@ import Callout from '../components/Callout.astro';
       <li><strong>N:M</strong> — Muchos a muchos. Se resuelve con una tabla intermedia.</li>
     </ul>
 
-    <Callout tipo="info" titulo="Notación Crow's Foot">
+    <Callout tipo="info" titulo="Tip: Curiosidad">
       <p>
-        Usamos notación <em>Crow's Foot</em> (pata de cuervo): las líneas
-        con <code>{"||"}</code> indican «uno y solo uno», <code>{"o{"}</code>
-        indica «cero o muchos». Es la notación más extendida en herramientas
-        modernas de modelado.
+        La notación <em>Crow's Foot</em> (pata de cuervo) fue ideada por
+        Gordon Everest en 1976, el mismo año en que Chen publicó el modelo
+        ER. Las líneas con <code>{"||"}</code> indican «uno y solo uno»,
+        <code>{"o{"}</code> indica «cero o muchos». ¡Lleva casi 50 años
+        ayudándonos a dibujar bases de datos!
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Reglas de DER Extendido === -->
+  <section data-reveal>
+    <h2>Reglas del DER extendido</h2>
+
+    <p>
+      El <strong>Diagrama Entidad-Relación (DER) extendido</strong>
+      incorpora conceptos que van más allá del modelo básico de Chen,
+      permitiendo representar estructuras más complejas y realistas del
+      dominio.
+    </p>
+
+    <div class="grid-2-col">
+      <div class="regla-der tarjeta">
+        <h3 class="texto-alt">Entidades débiles</h3>
+        <p>
+          Una entidad <strong>débil</strong> no existe por sí sola: depende
+          de otra entidad (fuerte) para identificarse. Su clave primaria
+          incluye la clave de la entidad fuerte. Ejemplo: <code>DETALLE_PEDIDO</code>
+          no tiene sentido sin <code>PEDIDO</code>.
+        </p>
+      </div>
+
+      <div class="regla-der tarjeta">
+        <h3 class="texto-alt">Relaciones ternarias</h3>
+        <p>
+          Conectan <strong>tres entidades</strong> simultáneamente. Se
+          representan con un rombo conectado a tres rectángulos. Ejemplo:
+          un <em>alumno</em> cursa una <em>asignatura</em> en un
+          <em>aula</em> determinada. La clave incluye los tres
+          identificadores.
+        </p>
+      </div>
+
+      <div class="regla-der tarjeta">
+        <h3 class="texto-alt">Especialización / Generalización</h3>
+        <p>
+          Permite modelar <strong>jerarquías</strong>: una entidad
+          genérica (superclase) se especializa en subtipos. Ejemplo:
+          <code>EMPLEADO</code> se especializa en <code>DOCENTE</code> y
+          <code>ADMINISTRATIVO</code>. Se puede modelar con una sola
+          tabla + discriminador o con tablas separadas.
+        </p>
+      </div>
+
+      <div class="regla-der tarjeta">
+        <h3 class="texto-alt">Atributos multivaluados y compuestos</h3>
+        <p>
+          Los <strong>multivaluados</strong> tienen varios valores por
+          entidad (ej: teléfonos de un cliente). Los <strong>compuestos</strong>
+          se descomponen en sub-atributos (ej: <em>domicilio</em> → calle,
+          número, ciudad). Se transforman en tablas independientes al
+          pasar al modelo lógico.
+        </p>
+      </div>
+    </div>
+
+    <Callout tipo="warn" titulo="Regla de transformación">
+      <p>
+        Al pasar del DER extendido al modelo lógico: las entidades débiles
+        generan tablas con FK compuesta, las relaciones ternarias generan
+        tablas con tres FK, y los atributos multivaluados generan tablas
+        independientes. <em>No se permiten colecciones en una columna
+        relacional.</em>
       </p>
     </Callout>
   </section>
@@ -259,7 +241,194 @@ import Callout from '../components/Callout.astro';
     </div>
   </section>
 
-  
+  <hr />
+
+  <!-- === Cápsula Informática === -->
+  <section class="capsula" data-reveal>
+    <header class="capsula__header">
+      <span class="capsula__etiqueta mono">CÁPSULA INFORMÁTICA</span>
+      <h2 class="capsula__titulo">Innovación en Bases de Datos: Bases de Datos Vectoriales para IA</h2>
+    </header>
+
+    <p>
+      La IA generativa ha transformado cómo almacenamos y recuperamos
+      información. Las <strong>bases de datos vectoriales</strong>
+      representan un salto cualitativo: en lugar de buscar coincidencias
+      exactas de texto, almacenan <em>embeddings</em> —vectores numéricos
+      que capturan el <strong>significado semántico</strong> de los datos—
+      y permiten encontrar información «parecida» en concepto, no solo en
+      palabras.
+    </p>
+
+    <p>
+      Sistemas como <em>pgvector</em> (extensión de PostgreSQL),
+      <em>Qdrant</em>, <em>ChromaDB</em> y <em>Weaviate</em> hacen posible
+      construir aplicaciones de <strong>recuperación aumentada</strong>
+      (RAG), recomendadores semánticos y buscadores que «entienden» la
+      intención del usuario. El patrón emergente es <em>híbrido</em>:
+      PostgreSQL para datos estructurados con <code>pgvector</code> para
+      similitud semántica en la misma instancia.
+    </p>
+
+    <div class="capsula__comparativa">
+      <div class="capsula__comparativa-item">
+        <span class="capsula__comparativa-titulo texto-acento">BD Relacional</span>
+        <span class="capsula__comparativa-desc texto-dim"><code>WHERE titulo = 'SQL'</code></span>
+        <span class="capsula__comparativa-nota texto-dim">Búsqueda exacta</span>
+      </div>
+      <div class="capsula__comparativa-flecha" aria-hidden="true">→</div>
+      <div class="capsula__comparativa-item">
+        <span class="capsula__comparativa-titulo texto-acento">BD Vectorial</span>
+        <span class="capsula__comparativa-desc texto-dim"><code>ORDER BY embedding &lt;-&gt; '[0.12, ...]'</code></span>
+        <span class="capsula__comparativa-nota texto-dim">Búsqueda semántica</span>
+      </div>
+    </div>
+
+    <Callout tipo="success" titulo="Por qué importa">
+      <p>
+        Una base vectorial puede reconocer que «auto» y «automóvil» son
+        <strong>conceptualmente similares</strong> sin necesidad de un
+        diccionario explícito. Esto revoluciona la búsqueda, los sistemas
+        de recomendación y la IA conversacional.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Arquitectura SGBD: DML, DDL, DCL === -->
+  <section data-reveal>
+    <h2>Arquitectura del SGBD: lenguajes y subcomponentes</h2>
+
+    <p>
+      Un <strong>Sistema de Gestión de Bases de Datos (SGBD)</strong>
+      expone tres familias de comandos SQL para operar sobre los datos y
+      el esquema. Cada familia tiene un propósito distinto y se
+      complementa con el modelo ANSI/SPARC visto en la sección anterior.
+    </p>
+
+    <div class="grid-3-col sgbd-card">
+      <div class="sgbd-item tarjeta">
+        <span class="sgbd-item__sigla mono texto-acento">DDL</span>
+        <h3>Data Definition Language</h3>
+        <p>
+          Define y modifica la <strong>estructura</strong> de la base de
+          datos: tablas, índices, constraints y vistas.
+        </p>
+        <ul class="sgbd-item__comandos">
+          <li><code class="mono">CREATE</code></li>
+          <li><code class="mono">ALTER</code></li>
+          <li><code class="mono">DROP</code></li>
+          <li><code class="mono">TRUNCATE</code></li>
+        </ul>
+      </div>
+
+      <div class="sgbd-item tarjeta">
+        <span class="sgbd-item__sigla mono texto-alt">DML</span>
+        <h3>Data Manipulation Language</h3>
+        <p>
+          Manipula los <strong>datos</strong> almacenados: consultar,
+          insertar, modificar y eliminar registros.
+        </p>
+        <ul class="sgbd-item__comandos">
+          <li><code class="mono">SELECT</code></li>
+          <li><code class="mono">INSERT</code></li>
+          <li><code class="mono">UPDATE</code></li>
+          <li><code class="mono">DELETE</code></li>
+        </ul>
+      </div>
+
+      <div class="sgbd-item tarjeta">
+        <span class="sgbd-item__sigla mono texto-sql">DCL</span>
+        <h3>Data Control Language</h3>
+        <p>
+          Controla el <strong>acceso</strong> y los <strong>permisos</strong>:
+          quién puede ver o modificar qué datos.
+        </p>
+        <ul class="sgbd-item__comandos">
+          <li><code class="mono">GRANT</code></li>
+          <li><code class="mono">REVOKE</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <Callout tipo="info" titulo="TCL: el cuarto lenguaje">
+      <p>
+        Existe una cuarta familia: <strong>TCL</strong> (Transaction
+        Control Language), con <code>COMMIT</code>, <code>ROLLBACK</code> y
+        <code>SAVEPOINT</code>. Se usa junto con DML para garantizar las
+        propiedades ACID vistas en la sección anterior.
+      </p>
+    </Callout>
+
+    <h3>Componentes internos del SGBD</h3>
+    <ul class="lista-conceptos">
+      <li><strong>Motor de almacenamiento</strong> — gestiona cómo se escriben y leen los datos en disco.</li>
+      <li><strong>Procesador de consultas</strong> — parsea SQL, optimiza el plan de ejecución y lo ejecuta.</li>
+      <li><strong>Gestor de transacciones</strong> — coordina concurrencia, locks y recuperación (WAL).</li>
+      <li><strong>Diccionario de datos</strong> — catálogo interno con metadatos del esquema.</li>
+    </ul>
+  </section>
+
+  <hr />
+
+  <!-- === Adivinanzas tecnológicas === -->
+  <section class="adivinanzas" data-reveal>
+    <header class="adivinanzas__header">
+      <span class="adivinanzas__etiqueta mono">DESAFÍO</span>
+      <h2 class="adivinanzas__titulo">Adivinanzas Tecnológicas</h2>
+      <p class="adivinanzas__intro texto-dim">
+        Pon a prueba tu ingenio. Las respuestas están al final de la revista,
+        en la contraportada.
+      </p>
+    </header>
+
+    <ol class="adivinanzas-lista">
+      <li class="adivinanza">
+        <span class="adivinanza__num mono texto-acento">1</span>
+        <div class="adivinanza__cuerpo">
+          <p class="adivinanza__texto">
+            Guardo millones de palabras, pero no las leo. Las convierto
+            en números y mido la distancia entre ideas. No busco lo que
+            escribes, sino lo que <em>quieres decir</em>.
+          </p>
+          <p class="adivinanza__pista texto-dim">
+            Pista: un tipo de base de datos que alimenta la IA.
+          </p>
+        </div>
+      </li>
+
+      <li class="adivinanza">
+        <span class="adivinanza__num mono texto-acento">2</span>
+        <div class="adivinanza__cuerpo">
+          <p class="adivinanza__texto">
+            Nací en un paper de 1976. Convierto la realidad en rectángulos
+            y rombos, y con patas de cuervo expreso cuántos se relacionan.
+            Soy el primer dibujo de toda base de datos bien hecha.
+          </p>
+          <p class="adivinanza__pista texto-dim">
+            Pista: el lenguaje visual del modelado conceptual.
+          </p>
+        </div>
+      </li>
+
+      <li class="adivinanza">
+        <span class="adivinanza__num mono texto-acento">3</span>
+        <div class="adivinanza__cuerpo">
+          <p class="adivinanza__texto">
+            No soy un dato ni un código. Soy una promesa: garantizo que
+            cada tabla tenga una sola razón para cambiar. Si me rompen,
+            aparecerán anomalías por todas partes.
+          </p>
+          <p class="adivinanza__pista texto-dim">
+            Pista: un principio de modelado, también conocido como
+            «responsabilidad única».
+          </p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
 </div>
 
 <style>
@@ -322,5 +491,287 @@ import Callout from '../components/Callout.astro';
 
   .lista-conceptos code {
     color: var(--c-sql);
+  }
+
+  /* === Cápsula Informática === */
+  .capsula {
+    padding: var(--sp-6);
+    background: linear-gradient(
+      135deg,
+      rgba(0, 217, 163, 0.05),
+      rgba(77, 158, 255, 0.04)
+    );
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-lg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .capsula::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--c-acento), var(--c-acento-alt));
+  }
+
+  .capsula__header {
+    margin-bottom: var(--sp-4);
+  }
+
+  .capsula__etiqueta {
+    display: inline-block;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+    letter-spacing: 0.15em;
+    color: var(--c-acento);
+    margin-bottom: var(--sp-2);
+  }
+
+  .capsula__titulo {
+    font-size: var(--fs-xl);
+    margin: 0;
+  }
+
+  .capsula__comparativa {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-4);
+    margin: var(--sp-5) 0;
+    flex-wrap: wrap;
+  }
+
+  .capsula__comparativa-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+    padding: var(--sp-4);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+    background: var(--c-bg-secundario);
+    text-align: center;
+    flex: 1;
+    min-width: 180px;
+  }
+
+  .capsula__comparativa-titulo {
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+  }
+
+  .capsula__comparativa-desc {
+    font-size: var(--fs-xs);
+  }
+
+  .capsula__comparativa-desc code {
+    font-size: var(--fs-xs);
+    color: var(--c-sql);
+  }
+
+  .capsula__comparativa-nota {
+    font-size: var(--fs-xs);
+    font-style: italic;
+  }
+
+  .capsula__comparativa-flecha {
+    font-size: var(--fs-2xl);
+    color: var(--c-acento);
+    font-weight: var(--fw-bold);
+  }
+
+  /* === Adivinanzas === */
+  .adivinanzas__header {
+    margin-bottom: var(--sp-5);
+  }
+
+  .adivinanzas__etiqueta {
+    display: inline-block;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+    letter-spacing: 0.15em;
+    color: var(--c-acento-alt);
+    margin-bottom: var(--sp-2);
+  }
+
+  .adivinanzas__titulo {
+    font-size: var(--fs-2xl);
+    margin: 0 0 var(--sp-2) 0;
+  }
+
+  .adivinanzas__intro {
+    font-size: var(--fs-sm);
+    font-style: italic;
+  }
+
+  .adivinanzas-lista {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+    list-style: none;
+    padding: 0;
+    counter-reset: adivinanza;
+  }
+
+  .adivinanza {
+    display: flex;
+    gap: var(--sp-4);
+    padding: var(--sp-4);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+    background: var(--c-bg-secundario);
+    transition: border-color var(--t-fast);
+  }
+
+  .adivinanza:hover {
+    border-color: var(--c-acento);
+  }
+
+  .adivinanza__num {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--r-full);
+    background: var(--c-bg-terciario);
+    border: 1px solid var(--c-acento);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-bold);
+  }
+
+  .adivinanza__cuerpo {
+    flex: 1;
+  }
+
+  .adivinanza__texto {
+    font-size: var(--fs-sm);
+    line-height: var(--lh-relaxed);
+    margin-bottom: var(--sp-2);
+    font-style: italic;
+  }
+
+  .adivinanza__pista {
+    font-size: var(--fs-xs);
+    margin: 0;
+  }
+
+  /* === Reglas de DER Extendido === */
+  .regla-der {
+    padding: var(--sp-5);
+    background: var(--c-bg-secundario);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+    transition: border-color var(--t-fast);
+  }
+
+  .regla-der:hover {
+    border-color: var(--c-acento-alt);
+  }
+
+  .regla-der h3 {
+    margin: 0 0 var(--sp-2) 0;
+  }
+
+  .regla-der p {
+    font-size: var(--fs-sm);
+    margin: 0;
+  }
+
+  .regla-der code {
+    color: var(--c-sql);
+  }
+
+  /* === Arquitectura SGBD === */
+  .sgbd-card {
+    gap: var(--sp-4);
+  }
+
+  .sgbd-item {
+    padding: var(--sp-5);
+    background: var(--c-bg-secundario);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+    text-align: center;
+    transition: border-color var(--t-fast);
+  }
+
+  .sgbd-item:hover {
+    border-color: var(--c-acento);
+  }
+
+  .sgbd-item__sigla {
+    display: inline-block;
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-black);
+    margin-bottom: var(--sp-2);
+  }
+
+  .sgbd-item h3 {
+    font-size: var(--fs-md);
+    margin: 0 0 var(--sp-2) 0;
+  }
+
+  .sgbd-item p {
+    font-size: var(--fs-sm);
+    margin: 0 0 var(--sp-3) 0;
+  }
+
+  .sgbd-item__comandos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--sp-2);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .sgbd-item__comandos li {
+    padding: var(--sp-1) var(--sp-3);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-sm);
+    font-size: var(--fs-xs);
+    background: var(--c-bg-terciario);
+  }
+
+  .sgbd-item__comandos code {
+    color: var(--c-sql);
+  }
+
+  /* === Responsive === */
+  @media (max-width: 639px) {
+    .capsula {
+      padding: var(--sp-4);
+    }
+
+    .capsula__comparativa {
+      flex-direction: column;
+    }
+
+    .capsula__comparativa-flecha {
+      transform: rotate(90deg);
+    }
+
+    .adivinanza {
+      padding: var(--sp-3);
+      gap: var(--sp-3);
+    }
+
+    .adivinanza__num {
+      width: 32px;
+      height: 32px;
+    }
+
+    .sgbd-item {
+      padding: var(--sp-4);
+    }
+
+    .sgbd-item__sigla {
+      font-size: var(--fs-xl);
+    }
   }
 </style>

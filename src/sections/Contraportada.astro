@@ -6,7 +6,7 @@ import { revista, secciones } from '../data/secciones';
 
 <div class="hoja-contenido">
 <SectionHeader
-    numero="11"
+    numero="14"
     titulo="Contraportada"
     descripcion="Créditos, referencias bibliográficas y cierre de la edición"
     categoria="cierre"
@@ -156,6 +156,43 @@ import { revista, secciones } from '../data/secciones';
         microservicios con bases de datos distribuidas.
       </p>
     </div>
+  </section>
+
+  <hr />
+
+  <!-- === Respuestas a las adivinanzas === -->
+  <section data-reveal class="respuestas-adivinanzas">
+    <h2>Respuestas: Adivinanzas Tecnológicas</h2>
+    <p class="respuestas-adivinanzas__intro texto-dim">
+      De la sección «Modelado de Datos».
+    </p>
+
+    <ol class="respuestas-lista">
+      <li>
+        <span class="respuestas-lista__num mono texto-acento">1</span>
+        <div class="respuestas-lista__cuerpo">
+          <strong>Base de datos vectorial</strong>. Convierte el contenido
+          en <em>embeddings</em> (vectores numéricos) y mide la distancia
+          semántica entre ideas, no entre palabras.
+        </div>
+      </li>
+      <li>
+        <span class="respuestas-lista__num mono texto-acento">2</span>
+        <div class="respuestas-lista__cuerpo">
+          <strong>Modelo entidad-relación (ER)</strong>. Propuesto por
+          Peter Chen en 1976, usa notación <em>Crow's Foot</em> para
+          expresar cardinalidades.
+        </div>
+      </li>
+      <li>
+        <span class="respuestas-lista__num mono texto-acento">3</span>
+        <div class="respuestas-lista__cuerpo">
+          <strong>Single Responsibility (Responsabilidad Única)</strong>.
+          Una tabla, una entidad. Romperlo genera anomalías de
+          actualización, inserción y borrado.
+        </div>
+      </li>
+    </ol>
   </section>
 
   <hr />
@@ -319,5 +356,47 @@ import { revista, secciones } from '../data/secciones';
     border-color: var(--c-acento);
     color: var(--c-acento);
     background: var(--c-bg-secundario);
+  }
+
+  /* === Respuestas adivinanzas === */
+  .respuestas-adivinanzas__intro {
+    font-size: var(--fs-sm);
+    font-style: italic;
+    margin-bottom: var(--sp-4);
+  }
+
+  .respuestas-lista {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    list-style: none;
+    padding: 0;
+  }
+
+  .respuestas-lista li {
+    display: flex;
+    gap: var(--sp-3);
+    align-items: flex-start;
+  }
+
+  .respuestas-lista__num {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--r-full);
+    background: var(--c-bg-terciario);
+    border: 1px solid var(--c-acento);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-bold);
+  }
+
+  .respuestas-lista__cuerpo {
+    flex: 1;
+    font-size: var(--fs-sm);
+    line-height: var(--lh-relaxed);
+    padding-top: var(--sp-1);
   }
 </style>

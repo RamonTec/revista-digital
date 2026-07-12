@@ -1,0 +1,14 @@
+---
+import RevistaLayout from '../layouts/RevistaLayout.astro';
+import NavPaginas from '../components/NavPaginas.astro';
+import FundamentosBD from '../sections/FundamentosBD.astro';
+---
+
+<RevistaLayout
+  titulo="Fundamentos de Bases de Datos"
+  seccionActiva="fundamentos-bd"
+  descripcion="Concepto, tipos, modelo ANSI/SPARC y propiedades ACID"
+>
+  <FundamentosBD />
+  <NavPaginas actual="fundamentos-bd" />
+</RevistaLayout>

@@ -1,0 +1,317 @@
+---
+// ============================================================
+// EquipoEditorial.astro — Créditos del equipo de la edición
+// Grid de integrantes + apartado destacado para Editoría Encargada
+// ============================================================
+
+import SectionHeader from '../components/SectionHeader.astro';
+import { revista } from '../data/secciones';
+
+const equipo = [
+  { nombre: 'Ronald Vizcaya', rol: 'Editor en Jefe', iniciales: 'RV' },
+  { nombre: 'Yelianny Herrera', rol: 'Directora de Contenido', iniciales: 'YH' },
+  { nombre: 'Yahir Guerra', rol: 'Coordinador Técnico', iniciales: 'YG' },
+  { nombre: 'Jesús Carrasco', rol: 'Diseñador Editorial', iniciales: 'JC' },
+  { nombre: 'Elías Estrabao', rol: 'Revisor de Calidad', iniciales: 'EE' },
+  { nombre: 'Ricardo Prado', rol: 'Coordinador de Producción', iniciales: 'RP' },
+];
+
+const editoria = {
+  nombre: 'Msc. Zulismar Gallardo',
+  rol: 'Editoría Encargada',
+  descripcion: 'Guía académica y supervisión editorial',
+  iniciales: 'ZG',
+};
+---
+
+<div class="hoja-contenido">
+  <SectionHeader
+    numero="13"
+    titulo="Equipo Editorial"
+    descripcion="Las personas detrás de esta edición"
+    categoria="cierre"
+  />
+
+  <section class="equipo">
+    {/* === Editoría Encargada: apartado exclusivo y destacado === */}
+    <div class="equipo-editoria" data-reveal>
+      <div class="equipo-editoria__sello">
+        <span class="equipo-editoria__iniciales">{editoria.iniciales}</span>
+      </div>
+      <div class="equipo-editoria__info">
+        <span class="equipo-editoria__etiqueta">Editoría Encargada</span>
+        <h2 class="equipo-editoria__nombre">{editoria.nombre}</h2>
+        <p class="equipo-editoria__desc texto-dim">{editoria.descripcion}</p>
+      </div>
+      <div class="equipo-editoria__decoracion" aria-hidden="true">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 2L14.5 8.5L21 9L16 13.5L17.5 20.5L12 17L6.5 20.5L8 13.5L3 9L9.5 8.5L12 2Z" />
+        </svg>
+      </div>
+    </div>
+
+    {/* === Equipo de trabajo === */}
+    <div class="equipo-grid">
+      {equipo.map((miembro, i) => (
+        <article
+          class="equipo-tarjeta"
+          data-reveal
+          data-reveal-delay={String(i + 1)}
+        >
+          <div class="equipo-tarjeta__avatar">
+            <span>{miembro.iniciales}</span>
+          </div>
+          <div class="equipo-tarjeta__info">
+            <h3 class="equipo-tarjeta__nombre">{miembro.nombre}</h3>
+            <span class="equipo-tarjeta__rol texto-acento">{miembro.rol}</span>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <footer class="equipo-footer" data-reveal data-reveal-delay="7">
+      <p class="equipo-footer__texto texto-dim">
+        {revista.nombre} · {revista.edicion} · {revista.fecha}
+      </p>
+      <p class="equipo-footer__issn mono texto-dim">{revista.issn}</p>
+    </footer>
+  </section>
+</div>
+
+<style>
+  .equipo {
+    max-width: var(--content-max);
+  }
+
+  /* === Editoría Encargada: apartado destacado === */
+  .equipo-editoria {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--sp-5);
+    padding: var(--sp-6);
+    margin-bottom: var(--sp-7);
+    background: linear-gradient(
+      135deg,
+      rgba(0, 217, 163, 0.08),
+      rgba(77, 158, 255, 0.05)
+    );
+    border: 1px solid var(--c-acento);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+  }
+
+  .equipo-editoria::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--c-acento), var(--c-acento-alt));
+  }
+
+  .equipo-editoria__sello {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    border-radius: var(--r-full);
+    background: linear-gradient(135deg, var(--c-acento), var(--c-acento-alt));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-glow);
+  }
+
+  .equipo-editoria__iniciales {
+    font-family: var(--font-mono);
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-bold);
+    color: var(--c-bg-primario);
+    letter-spacing: -0.02em;
+  }
+
+  .equipo-editoria__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .equipo-editoria__etiqueta {
+    display: inline-block;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--c-acento);
+    margin-bottom: var(--sp-1);
+  }
+
+  .equipo-editoria__nombre {
+    font-size: var(--fs-xl);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-tight);
+    margin-bottom: var(--sp-1);
+    letter-spacing: -0.02em;
+  }
+
+  .equipo-editoria__desc {
+    font-size: var(--fs-sm);
+    font-style: italic;
+  }
+
+  .equipo-editoria__decoracion {
+    position: absolute;
+    top: var(--sp-3);
+    right: var(--sp-3);
+    color: var(--c-acento);
+    opacity: 0.25;
+  }
+
+  /* === Grid de equipo === */
+  .equipo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-6);
+  }
+
+  .equipo-tarjeta {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+    background: var(--c-bg-secundario);
+    transition: all var(--t-fast);
+  }
+
+  .equipo-tarjeta:hover {
+    border-color: var(--c-acento);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .equipo-tarjeta__avatar {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--r-full);
+    background: var(--c-bg-terciario);
+    border: 1px solid var(--c-borde);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .equipo-tarjeta__avatar span {
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    color: var(--c-acento-alt);
+  }
+
+  .equipo-tarjeta__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .equipo-tarjeta__nombre {
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+    line-height: var(--lh-tight);
+    margin-bottom: 2px;
+  }
+
+  .equipo-tarjeta__rol {
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-medium);
+  }
+
+  /* === Footer de créditos === */
+  .equipo-footer {
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--c-borde);
+    text-align: center;
+  }
+
+  .equipo-footer__texto {
+    font-size: var(--fs-sm);
+    margin-bottom: var(--sp-1);
+  }
+
+  .equipo-footer__issn {
+    font-size: var(--fs-xs);
+    opacity: 0.7;
+  }
+
+  /* === Responsive === */
+
+  /* Landscape desktop: grid de 2 columnas se mantiene */
+  @media (min-width: 769px) {
+    .equipo-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-4);
+    }
+
+    .equipo-editoria {
+      padding: var(--sp-7) var(--sp-7) var(--sp-7) var(--sp-7);
+      gap: var(--sp-6);
+    }
+
+    .equipo-editoria__sello {
+      width: 96px;
+      height: 96px;
+    }
+
+    .equipo-editoria__iniciales {
+      font-size: var(--fs-2xl);
+    }
+
+    .equipo-editoria__nombre {
+      font-size: var(--fs-2xl);
+    }
+  }
+
+  /* Móvil: una columna */
+  @media (max-width: 639px) {
+    .equipo-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .equipo-editoria {
+      padding: var(--sp-4);
+      gap: var(--sp-3);
+    }
+
+    .equipo-editoria__sello {
+      width: 56px;
+      height: 56px;
+    }
+
+    .equipo-editoria__iniciales {
+      font-size: var(--fs-md);
+    }
+
+    .equipo-editoria__nombre {
+      font-size: var(--fs-lg);
+    }
+
+    .equipo-editoria__decoracion {
+      display: none;
+    }
+  }
+
+  /* Móvil pequeño: avatar más compacto */
+  @media (max-width: 480px) {
+    .equipo-tarjeta {
+      padding: var(--sp-2);
+      gap: var(--sp-2);
+    }
+
+    .equipo-tarjeta__avatar {
+      width: 40px;
+      height: 40px;
+    }
+  }
+</style>

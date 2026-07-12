@@ -1,0 +1,489 @@
+---
+// fundamentos-bd.astro — Concepto, Tipos, Modelo ANSI/SPARC, Propiedades ACID
+import SectionHeader from '../components/SectionHeader.astro';
+import Mermaid from '../components/Mermaid.astro';
+import Callout from '../components/Callout.astro';
+---
+
+<div class="hoja-contenido">
+<SectionHeader
+    numero="05"
+    titulo="Fundamentos de Bases de Datos"
+    descripcion="Concepto, tipos, arquitectura ANSI/SPARC y propiedades ACID"
+    categoria="teoria"
+  />
+
+  <!-- === Concepto === -->
+  <section data-reveal>
+    <h2>¿Qué es una base de datos?</h2>
+
+    <p>
+      Una <strong>base de datos</strong> (BD) es un conjunto estructurado
+      de datos relacionados entre sí, almacenado de forma que permita
+      <em>consultar</em>, <em>actualizar</em> y <em>gestionar</em> la
+      información de manera eficiente. Para gestionarla se utiliza un
+      <strong>SGBD</strong> (Sistema de Gestión de Bases de Datos), como
+      PostgreSQL, MySQL, MongoDB o Redis, que actúa como intermediario
+      entre los datos físicos y las aplicaciones.
+    </p>
+
+    <p>
+      La evolución histórica fue desde los <em>ficheros secuenciales</em>
+      de los años 60, pasando por el <em>modelo jerárquico</em> y el
+      <em>modelo en red</em>, hasta llegar al <em>modelo relacional</em>
+      propuesto por Edgar F. Codd en 1970, que hoy sigue siendo el
+      estándar dominante.
+    </p>
+
+    <Callout tipo="info" titulo="Diferencia clave">
+      <p>
+        La <strong>base de datos</strong> es el conjunto de datos. El
+        <strong>SGBD</strong> es el software que los administra. PostgreSQL
+        es un SGBD; la base de datos es lo que tú creas dentro de él con
+        <code>CREATE DATABASE</code>.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Tipos de Bases de Datos === -->
+  <section data-reveal>
+    <h2>Tipos de bases de datos</h2>
+
+    <p>
+      No todas las bases de datos almacenan información de la misma forma.
+      El <em>tipo</em> determina cómo se estructuran los datos, qué
+      consultas son eficientes y qué garantías de consistencia ofrecen.
+    </p>
+
+    <div class="grid-2-col">
+      <div class="tipo-bd tarjeta">
+        <h3 class="texto-alt">Relacionales (SQL)</h3>
+        <p>
+          Datos en <strong>tablas</strong> con filas y columnas.
+          Esquema rígido, ACID garantizado. Ejemplos: PostgreSQL, MySQL,
+          SQLite, Oracle. Ideales para datos estructurados con
+          relaciones complejas.
+        </p>
+      </div>
+
+      <div class="tipo-bd tarjeta">
+        <h3 class="texto-alt">Documentales (NoSQL)</h3>
+        <p>
+          Datos en <strong>documentos</strong> (JSON/BSON). Esquema
+          flexible, sin JOINs nativos. Ejemplos: MongoDB, CouchDB.
+          Ideales para catálogos, CMS y datos semi-estructurados.
+        </p>
+      </div>
+
+      <div class="tipo-bd tarjeta">
+        <h3 class="texto-alt">Clave-Valor</h3>
+        <p>
+          Cada registro es un par <code>clave → valor</code>. Acceso
+          directo y velocísimo. Ejemplos: Redis, DynamoDB. Ideales para
+          caché, sesiones y contadores.
+        </p>
+      </div>
+
+      <div class="tipo-bd tarjeta">
+        <h3 class="texto-alt">Grafos</h3>
+        <p>
+          Datos como <strong>nodos</strong> y <strong>aristas</strong>.
+          Consultas de relaciones en profundidad. Ejemplos: Neo4j,
+          ArangoDB. Ideales para redes sociales, recomendadores y
+          detección de fraude.
+        </p>
+      </div>
+
+      <div class="tipo-bd tarjeta">
+        <h3 class="texto-alt">Columnares</h3>
+        <p>
+          Almacena datos por <strong>columnas</strong> en lugar de filas.
+          Compresión alta y agregaciones veloces. Ejemplos: Cassandra,
+          ClickHouse. Ideales para analítica y big data.
+        </p>
+      </div>
+
+      <div class="tipo-bd tarjeta">
+        <h3 class="texto-alt">Vectoriales</h3>
+        <p>
+          Almacena <em>embeddings</em> (vectores numéricos) y mide
+          <strong>similitud semántica</strong>. Ejemplos: pgvector,
+          Qdrant, ChromaDB. Ideales para IA, RAG y búsqueda semántica.
+        </p>
+      </div>
+    </div>
+
+    <Callout tipo="warn" titulo="No hay un ganador único">
+      <p>
+        El patrón moderno es <em>híbrido</em>: usar el tipo correcto para
+        cada caso de uso. Un sistema típico combina PostgreSQL (datos
+        transaccionales) + Redis (caché) + Qdrant (búsqueda semántica).
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Modelo ANSI/SPARC === -->
+  <section data-reveal>
+    <h2>Modelo ANSI/SPARC: arquitectura de tres niveles</h2>
+
+    <p>
+      En 1975, el comité <strong>ANSI/X3/SPARC</strong> definió una
+      arquitectura de <strong>tres niveles</strong> para los SGBD. Su
+      objetivo: lograr <em>independencia de datos</em>, de modo que
+      cambios en un nivel no afecten a los demás.
+    </p>
+
+    <Mermaid
+      caption="Figura 4.1 — Arquitectura ANSI/SPARC: tres niveles de abstracción"
+      diagram={`flowchart TB
+        N1["Nivel Externo\n(vistas de usuario)"]
+        N2["Nivel Conceptual\n(esquema lógico global)"]
+        N3["Nivel Interno\n(almacenamiento físico)"]
+
+        N1 -->|"mapeo externo-conceptual"| N2
+        N2 -->|"mapeo conceptual-interno"| N3
+
+        style N1 fill:#0f1419,stroke:#00d9a3,color:#e6edf3
+        style N2 fill:#0f1419,stroke:#4d9eff,color:#e6edf3
+        style N3 fill:#0f1419,stroke:#ffa657,color:#e6edf3`}
+    />
+
+    <div class="grid-3-col ansisparc">
+      <div class="ansisparc-card tarjeta">
+        <span class="ansisparc-card__num texto-acento mono">1</span>
+        <h3>Nivel externo</h3>
+        <p>
+          Define las <strong>vistas</strong> que ven los usuarios o
+          aplicaciones. Cada vista muestra solo los datos relevantes para
+          un perfil. Ejemplo: un cajero ve cuentas; un cliente ve sus
+          movimientos.
+        </p>
+      </div>
+      <div class="ansisparc-card tarjeta">
+        <span class="ansisparc-card__num texto-acento mono">2</span>
+        <h3>Nivel conceptual</h3>
+        <p>
+          Describe la <strong>estructura lógica global</strong> de toda la
+          base de datos: entidades, atributos, relaciones y constraints.
+          Es independiente del almacenamiento físico y de las vistas.
+        </p>
+      </div>
+      <div class="ansisparc-card tarjeta">
+        <span class="ansisparc-card__num texto-acento mono">3</span>
+        <h3>Nivel interno</h3>
+        <p>
+          Define <strong>cómo se almacenan</strong> los datos físicamente:
+          índices, páginas, rutas de archivos, estrategias de acceso y
+          compresión. Es transparente para el usuario.
+        </p>
+      </div>
+    </div>
+
+    <Callout tipo="success" titulo="Beneficio de la independencia">
+      <p>
+        Gracias a los <em>mapeos</em> entre niveles, cambiar el disco
+        físico (nivel interno) no obliga a reescribir las aplicaciones
+        (nivel externo). Esa independencia es la base de la portabilidad
+        de los SGBD modernos.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Propiedades ACID === -->
+  <section data-reveal>
+    <h2>Propiedades ACID: garantías de las transacciones</h2>
+
+    <p>
+      Una <strong>transacción</strong> es una unidad de trabajo que se
+      ejecuta completamente o no se ejecuta en absoluto. Las propiedades
+      <strong>ACID</strong>, formuladas por Andreas Reuter y Theo Härder
+      en 1983, garantizan la fiabilidad de las transacciones incluso ante
+      fallos del sistema.
+    </p>
+
+    <div class="grid-2-col">
+      <div class="acid-card tarjeta">
+        <span class="acid-card__letra mono">A</span>
+        <div class="acid-card__info">
+          <h3>Atomicidad</h3>
+          <p>
+            <em>Todo o nada</em>. Una transacción se ejecuta
+            completamente o se revierte por completo. Si una de sus
+            operaciones falla, todas las anteriores se deshacen
+            (<code>ROLLBACK</code>).
+          </p>
+        </div>
+      </div>
+
+      <div class="acid-card tarjeta">
+        <span class="acid-card__letra mono">C</span>
+        <div class="acid-card__info">
+          <h3>Consistencia</h3>
+          <p>
+            La transacción lleva la base de datos de un estado
+            <strong>válido</strong> a otro estado <strong>válido</strong>.
+            Todas las reglas de integridad (constraints, claves, dominios)
+            se respetan antes y después.
+          </p>
+        </div>
+      </div>
+
+      <div class="acid-card tarjeta">
+        <span class="acid-card__letra mono">I</span>
+        <div class="acid-card__info">
+          <h3>Aislamiento (Isolation)</h3>
+          <p>
+            Transacciones concurrentes no interfieren entre sí. El
+            resultado de ejecutarlas en paralelo es el mismo que si se
+            ejecutaran una tras otra. Se controla con <em>locks</em> y
+            niveles de aislamiento.
+          </p>
+        </div>
+      </div>
+
+      <div class="acid-card tarjeta">
+        <span class="acid-card__letra mono">D</span>
+        <div class="acid-card__info">
+          <h3>Durabilidad</h3>
+          <p>
+            Una vez confirmada (<code>COMMIT</code>), los cambios
+            <strong>persisten</strong> incluso ante caídas de energía o
+            fallos del sistema. Se garantiza con el <em>WAL</em> (Write
+            Ahead Log).
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <Callout tipo="warn" titulo="ACID vs BASE">
+      <p>
+        Las bases NoSQL suelen relajar ACID en favor del teorema CAP y
+        el modelo <strong>BASE</strong> (<em>Basically Available, Soft
+        state, Eventual consistency</em>). La elección depende del caso de
+        uso: transaccional estricto → ACID; escalabilidad masiva → BASE.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Cápsula de conocimiento === -->
+  <section class="capsula" data-reveal>
+    <header class="capsula__header">
+      <span class="capsula__etiqueta mono">CÁPSULA DE CONOCIMIENTO</span>
+      <h2 class="capsula__titulo">Dato curioso técnico: el bug de la transacción fantasma</h2>
+    </header>
+
+    <p>
+      En 1995, un grupo de bancos europeos reportó transferencias
+      duplicadas: el mismo dinero llegaba dos veces a la cuenta destino.
+      La causa no fue un hacker ni un fallo de red, sino un bug en el
+      <em>logging de transacciones</em>: cuando el servidor se reiniciaba
+      a mitad de un <code>COMMIT</code>, el sistema no distinguía si la
+      transacción se había completado o no, y la <em>re-ejecutaba</em>
+      por defecto.
+    </p>
+
+    <p>
+      Esto llevó a la incorporación del <strong>Write-Ahead Log (WAL)</strong>
+      con identificación unívoca de transacciones: antes de escribir
+      cualquier cambio en disco, el SGBD registra la intención en un
+      <em>log</em> durable. Al recuperar, el sistema aplica el log o lo
+      revierte, pero <strong>nunca duplica</strong>. Hoy, el WAL es el
+      mecanismo estándar que garantiza la <em>durabilidad</em> de ACID en
+      PostgreSQL, MySQL (InnoDB) y SQLite.
+    </p>
+
+    <Callout tipo="info" titulo="Para reflexionar">
+      <p>
+        Las propiedades ACID no son una decoración teórica: son el muro
+        que evita que un reinicio inesperado duplique tu sueldo o borre
+        tus ahorros. Lo que parece abstracto en un libro se vuelve
+        crítico cuando hay dinero real de por medio.
+      </p>
+    </Callout>
+  </section>
+
+</div>
+
+<style>
+  h2 {
+    font-size: var(--fs-2xl);
+    margin-bottom: var(--sp-4);
+  }
+
+  h3 {
+    font-size: var(--fs-lg);
+    margin: var(--sp-5) 0 var(--sp-3);
+  }
+
+  p {
+    font-size: var(--fs-md);
+    line-height: var(--lh-relaxed);
+    margin-bottom: var(--sp-4);
+  }
+
+  /* === Tarjetas de tipos de BD === */
+  .tipo-bd {
+    padding: var(--sp-5);
+    background: var(--c-bg-secundario);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+    transition: border-color var(--t-fast);
+  }
+
+  .tipo-bd:hover {
+    border-color: var(--c-acento);
+  }
+
+  .tipo-bd h3 {
+    margin: 0 0 var(--sp-2) 0;
+  }
+
+  .tipo-bd p {
+    font-size: var(--fs-sm);
+    margin: 0;
+  }
+
+  .tipo-bd code {
+    color: var(--c-sql);
+  }
+
+  /* === ANSI/SPARC === */
+  .ansisparc-card {
+    padding: var(--sp-5);
+    background: var(--c-bg-secundario);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+  }
+
+  .ansisparc-card__num {
+    display: inline-block;
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-black);
+    margin-bottom: var(--sp-2);
+  }
+
+  .ansisparc-card h3 {
+    margin: 0 0 var(--sp-2) 0;
+  }
+
+  .ansisparc-card p {
+    font-size: var(--fs-sm);
+    margin: 0;
+  }
+
+  /* === ACID === */
+  .acid-card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-4);
+    padding: var(--sp-5);
+    background: var(--c-bg-secundario);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+    transition: border-color var(--t-fast);
+  }
+
+  .acid-card:hover {
+    border-color: var(--c-acento-alt);
+  }
+
+  .acid-card__letra {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--r-full);
+    background: var(--c-bg-terciario);
+    border: 2px solid var(--c-acento);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-black);
+    color: var(--c-acento);
+  }
+
+  .acid-card__info h3 {
+    margin: 0 0 var(--sp-2) 0;
+  }
+
+  .acid-card__info p {
+    font-size: var(--fs-sm);
+    margin: 0;
+  }
+
+  .acid-card__info code {
+    color: var(--c-sql);
+  }
+
+  /* === Cápsula de conocimiento === */
+  .capsula {
+    padding: var(--sp-6);
+    background: linear-gradient(
+      135deg,
+      rgba(0, 217, 163, 0.05),
+      rgba(77, 158, 255, 0.04)
+    );
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-lg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .capsula::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--c-acento), var(--c-acento-alt));
+  }
+
+  .capsula__header {
+    margin-bottom: var(--sp-4);
+  }
+
+  .capsula__etiqueta {
+    display: inline-block;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+    letter-spacing: 0.15em;
+    color: var(--c-acento);
+    margin-bottom: var(--sp-2);
+  }
+
+  .capsula__titulo {
+    font-size: var(--fs-xl);
+    margin: 0;
+  }
+
+  .capsula p {
+    font-size: var(--fs-sm);
+  }
+
+  /* === Responsive === */
+  @media (max-width: 639px) {
+    .capsula {
+      padding: var(--sp-4);
+    }
+
+    .acid-card {
+      padding: var(--sp-4);
+      gap: var(--sp-3);
+    }
+
+    .acid-card__letra {
+      width: 44px;
+      height: 44px;
+      font-size: var(--fs-xl);
+    }
+  }
+</style>
