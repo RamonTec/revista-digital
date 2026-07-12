@@ -203,6 +203,7 @@ import { secciones } from '../data/secciones';
     }
 
     const { width, height } = measureAvailableSpace();
+    const isMobile = window.innerWidth <= 768;
 
     pageFlip = new PageFlip(bookEl, {
       width,
@@ -220,9 +221,9 @@ import { secciones } from '../data/secciones';
       showCover: true,
       showPageCorners: false, // <-- Quita el efecto automático de curvar la hoja al acercar el mouse
       mobileScrollSupport: true,
-      swipeDistance: 20,
+      swipeDistance: isMobile ? 9999 : 20, // Desactiva el swipe nativo en mobile
       clickEventForward: true,
-      useMouseEvents: true, // Se requiere true para no romper scroll nativo/mobile interno
+      useMouseEvents: !isMobile, // Se desactiva en mobile para no romper scroll nativo
       disableFlipByClick: false,
     });
 
@@ -412,6 +413,8 @@ import { secciones } from '../data/secciones';
   // Refuerza el swipe nativo de StPageFlip en zonas donde el scroll
   // vertical del contenido puede interferir.
   function initSwipeGestures() {
+    if (window.innerWidth <= 768) return; // Desactivar swipe personalizado en mobile
+    
     let touchStartX = 0;
     let touchStartY = 0;
     const SWIPE_THRESHOLD = 50;
