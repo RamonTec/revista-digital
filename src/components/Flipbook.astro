@@ -140,6 +140,8 @@ import { secciones } from '../data/secciones';
 
 <script>
   import { PageFlip } from 'page-flip';
+  import { driver } from 'driver.js';
+  import 'driver.js/dist/driver.css';
   import { secciones } from '../data/secciones';
 
   type PageFlipInstance = InstanceType<typeof PageFlip>;
@@ -283,6 +285,58 @@ import { secciones } from '../data/secciones';
 
     // Exponer globalmente para FlipControls o debug
     (window as any).__pageFlip = pageFlip;
+
+    // Lanzar tour interactivo si es la primera vez
+    setTimeout(initTour, 1000);
+  }
+
+  function initTour() {
+    if (localStorage.getItem('bdd_tour_v1') === 'done') return;
+    
+    const isMobile = window.innerWidth <= 768;
+    
+    const tour = driver({
+      showProgress: true,
+      nextBtnText: 'Siguiente',
+      prevBtnText: 'Anterior',
+      doneBtnText: '¡Entendido!',
+      popoverClass: 'revista-tour',
+      onDestroyed: () => {
+        localStorage.setItem('bdd_tour_v1', 'done');
+      },
+      steps: [
+        {
+          element: '.flipbook-container',
+          popover: {
+            title: '¡Bienvenido a la Revista Digital!',
+            description:  
+              'Desplázate hacia abajo libremente para leer. Usa los botones inferiores para pasar de página.' ,
+            side: 'top',
+            align: 'center'
+          }
+        },
+        {
+          element: '#flip-controls',
+          popover: {
+            title: 'Controles de Navegación',
+            description: 'Usa esta barra para retroceder o avanzar rápidamente entre las secciones de la revista.',
+            side: 'top',
+            align: 'center'
+          }
+        },
+        {
+          element: '#flip-indice-toggle',
+          popover: {
+            title: 'El Índice',
+            description: 'Haz clic aquí en cualquier momento para desplegar el menú de contenidos y saltar directamente al artículo que te interese.',
+            side: 'top',
+            align: 'center'
+          }
+        }
+      ]
+    });
+
+    tour.drive();
   }
 
   function updateIndicator(pageNum: number) {
