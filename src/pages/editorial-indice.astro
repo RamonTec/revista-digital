@@ -1,0 +1,14 @@
+---
+import RevistaLayout from '../layouts/RevistaLayout.astro';
+import NavPaginas from '../components/NavPaginas.astro';
+import EditorialIndice from '../sections/EditorialIndice.astro';
+---
+
+<RevistaLayout
+  titulo="Editorial e Índice"
+  seccionActiva="editorial-indice"
+  descripcion="Bienvenida del editor y mapa de navegación de la edición"
+>
+  <EditorialIndice />
+  <NavPaginas actual="editorial-indice" />
+</RevistaLayout>

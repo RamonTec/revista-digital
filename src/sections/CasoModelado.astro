@@ -1,0 +1,353 @@
+---
+// caso-practico-modelado.astro — Diseño del modelo ER
+import SectionHeader from '../components/SectionHeader.astro';
+import Mermaid from '../components/Mermaid.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+import Callout from '../components/Callout.astro';
+---
+
+<div class="hoja-contenido">
+<SectionHeader
+    numero="07"
+    titulo="Caso Práctico: Modelado"
+    descripcion="Del análisis de requisitos al diagrama entidad-relación formal"
+    categoria="practica"
+  />
+
+  <!-- === Modelo conceptual === -->
+  <section data-reveal>
+    <h2>Modelo conceptual: entidades y relaciones</h2>
+
+    <p>
+      A partir de los requisitos de la sección anterior, identificamos
+      <strong>cuatro entidades</strong> y <strong>tres relaciones</strong>.
+      Antes de pensar en columnas, definimos cómo se relacionan.
+    </p>
+
+    <Mermaid
+      caption="Figura 7.1 — Diagrama ER conceptual de la biblioteca"
+      diagram={`erDiagram
+        SOCIO ||--o{ PRESTAMO : "realiza"
+        COPIA ||--o{ PRESTAMO : "es objeto de"
+        LIBRO ||--o{ COPIA : "tiene"}
+
+        SOCIO {
+          int id PK
+          string nombre
+          string email UK
+          string telefono
+          string estado
+          date fecha_alta
+        }
+
+        LIBRO {
+          int id PK
+          string isbn UK
+          string titulo
+          string autor
+          int anio_publicacion
+          string genero
+        }
+
+        COPIA {
+          int id PK
+          int libro_id FK
+          string estado
+          date fecha_adquisicion
+        }
+
+        PRESTAMO {
+          int id PK
+          int socio_id FK
+          int copia_id FK
+          date fecha_prestamo
+          date fecha_devolucion
+          date fecha_real_devolucion
+          string estado
+        }`}
+    />
+  </section>
+
+  <hr />
+
+  <!-- === Análisis de relaciones === -->
+  <section data-reveal>
+    <h2>Análisis de cada relación</h2>
+
+    <div class="relacion-card tarjeta">
+      <h3 class="texto-acento">SOCIO → PRESTAMO (1:N)</h3>
+      <p>
+        Un socio puede realizar <strong>cero o muchos</strong> préstamos
+        a lo largo del tiempo, pero cada préstamo pertenece a
+        <strong>uno y solo un</strong> socio. La clave foránea
+        <code>socio_id</code> va en PRESTAMO.
+      </p>
+    </div>
+
+    <div class="relacion-card tarjeta">
+      <h3 class="texto-acento">COPIA → PRESTAMO (1:N)</h3>
+      <p>
+        Una copia puede estar en <strong>cero o muchos</strong> préstamos
+        (históricos), pero un préstamo se asocia a <strong>una y solo
+        una</strong> copia. La clave foránea <code>copia_id</code> va en
+        PRESTAMO.
+      </p>
+    </div>
+
+    <div class="relacion-card tarjeta">
+      <h3 class="texto-acento">LIBRO → COPIA (1:N)</h3>
+      <p>
+        Un libro (título/ISBN) puede tener <strong>una o muchas</strong>
+        copias físicas, pero cada copia pertenece a <strong>un solo</strong>
+        libro. La clave foránea <code>libro_id</code> va en COPIA.
+      </p>
+    </div>
+
+    <Callout tipo="info" titulo="¿Por qué separamos LIBRO y COPIA?">
+      <p>
+        El ISBN identifica el título, no el ejemplar físico. La biblioteca
+        puede tener 5 copias del mismo libro. Sin esta separación, no
+        podríamos distinguir cuál copia está prestada y cuál disponible.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Cardinalidades === -->
+  <section data-reveal>
+    <h2>Cardinalidades y opcionalidad</h2>
+
+    <div class="tabla-wrap">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Relación</th>
+            <th>Izquierda</th>
+            <th>Derecha</th>
+            <th>FK en</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">SOCIO—PRESTAMO</td>
+            <td>1 (obligatorio)</td>
+            <td>0..N (opcional)</td>
+            <td class="texto-sql mono">PRESTAMO.socio_id</td>
+          </tr>
+          <tr>
+            <td class="mono">COPIA—PRESTAMO</td>
+            <td>1 (obligatorio)</td>
+            <td>0..N (opcional)</td>
+            <td class="texto-sql mono">PRESTAMO.copia_id</td>
+          </tr>
+          <tr>
+            <td class="mono">LIBRO—COPIA</td>
+            <td>1 (obligatorio)</td>
+            <td>1..N (obligatorio)</td>
+            <td class="texto-sql mono">COPIA.libro_id</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- === Diccionario de datos === -->
+  <section data-reveal>
+    <h2>Diccionario de datos (modelo lógico)</h2>
+
+    <p>
+      Cada atributo tiene un <strong>tipo</strong>, una restricción
+      (obligatorio/opcional) y una <strong>clave</strong> (PK/FK/UK).
+      Este diccionario es la base para el <code>CREATE TABLE</code> que
+      escribiremos en la sección 09.
+    </p>
+
+    <h3>Tabla: <code class="mono texto-sql">socios</code></h3>
+    <div class="tabla-wrap">
+      <table class="tabla">
+        <thead><tr><th>Columna</th><th>Tipo</th><th>Nulo</th><th>Clave</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">id</td><td class="mono texto-dim">SERIAL</td><td>NO</td><td class="texto-acento">PK</td><td>Identificador único</td></tr>
+          <tr><td class="mono">nombre</td><td class="mono texto-dim">VARCHAR(100)</td><td>NO</td><td>—</td><td>Nombre completo</td></tr>
+          <tr><td class="mono">email</td><td class="mono texto-dim">VARCHAR(255)</td><td>NO</td><td class="texto-acento">UK</td><td>Email único</td></tr>
+          <tr><td class="mono">telefono</td><td class="mono texto-dim">VARCHAR(20)</td><td>SI</td><td>—</td><td>Teléfono opcional</td></tr>
+          <tr><td class="mono">estado</td><td class="mono texto-dim">VARCHAR(15)</td><td>NO</td><td>—</td><td>activo | suspendido</td></tr>
+          <tr><td class="mono">fecha_alta</td><td class="mono texto-dim">DATE</td><td>NO</td><td>—</td><td>Fecha de registro</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Tabla: <code class="mono texto-sql">libros</code></h3>
+    <div class="tabla-wrap">
+      <table class="tabla">
+        <thead><tr><th>Columna</th><th>Tipo</th><th>Nulo</th><th>Clave</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">id</td><td class="mono texto-dim">SERIAL</td><td>NO</td><td class="texto-acento">PK</td><td>Identificador único</td></tr>
+          <tr><td class="mono">isbn</td><td class="mono texto-dim">VARCHAR(17)</td><td>NO</td><td class="texto-acento">UK</td><td>ISBN-13 único</td></tr>
+          <tr><td class="mono">titulo</td><td class="mono texto-dim">VARCHAR(255)</td><td>NO</td><td>—</td><td>Título del libro</td></tr>
+          <tr><td class="mono">autor</td><td class="mono texto-dim">VARCHAR(150)</td><td>NO</td><td>—</td><td>Autor principal</td></tr>
+          <tr><td class="mono">anio_publicacion</td><td class="mono texto-dim">INT</td><td>SI</td><td>—</td><td>Año de publicación</td></tr>
+          <tr><td class="mono">genero</td><td class="mono texto-dim">VARCHAR(50)</td><td>NO</td><td>—</td><td>Género literario</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Tabla: <code class="mono texto-sql">copias</code></h3>
+    <div class="tabla-wrap">
+      <table class="tabla">
+        <thead><tr><th>Columna</th><th>Tipo</th><th>Nulo</th><th>Clave</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">id</td><td class="mono texto-dim">SERIAL</td><td>NO</td><td class="texto-acento">PK</td><td>Identificador de copia</td></tr>
+          <tr><td class="mono">libro_id</td><td class="mono texto-dim">INT</td><td>NO</td><td class="texto-alt">FK</td><td>Referencia a libros.id</td></tr>
+          <tr><td class="mono">estado</td><td class="mono texto-dim">VARCHAR(15)</td><td>NO</td><td>—</td><td>disponible | prestado | en_reparacion</td></tr>
+          <tr><td class="mono">fecha_adquisicion</td><td class="mono texto-dim">DATE</td><td>NO</td><td>—</td><td>Fecha de compra</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Tabla: <code class="mono texto-sql">prestamos</code></h3>
+    <div class="tabla-wrap">
+      <table class="tabla">
+        <thead><tr><th>Columna</th><th>Tipo</th><th>Nulo</th><th>Clave</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">id</td><td class="mono texto-dim">SERIAL</td><td>NO</td><td class="texto-acento">PK</td><td>Identificador de préstamo</td></tr>
+          <tr><td class="mono">socio_id</td><td class="mono texto-dim">INT</td><td>NO</td><td class="texto-alt">FK</td><td>Referencia a socios.id</td></tr>
+          <tr><td class="mono">copia_id</td><td class="mono texto-dim">INT</td><td>NO</td><td class="texto-alt">FK</td><td>Referencia a copias.id</td></tr>
+          <tr><td class="mono">fecha_prestamo</td><td class="mono texto-dim">DATE</td><td>NO</td><td>—</td><td>Fecha de inicio</td></tr>
+          <tr><td class="mono">fecha_devolucion</td><td class="mono texto-dim">DATE</td><td>NO</td><td>—</td><td>Fecha límite de devolución</td></tr>
+          <tr><td class="mono">fecha_real_devolucion</td><td class="mono texto-dim">DATE</td><td>SI</td><td>—</td><td>Fecha real (null si no devuelto)</td></tr>
+          <tr><td class="mono">estado</td><td class="mono texto-dim">VARCHAR(15)</td><td>NO</td><td>—</td><td>activo | devuelto | retrasado</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- === Validación contra escenarios BDD === -->
+  <section data-reveal>
+    <h2>Validación del modelo contra escenarios BDD</h2>
+
+    <p>
+      Verificamos que el modelo puede responder a los escenarios planteados
+      en la sección 06:
+    </p>
+
+    <CodeBlock
+      language="sql"
+      filename="validacion_modelo.sql"
+      code={`-- Escenario: "Préstamo exitoso de una copia disponible"
+-- ¿Podemos verificar que la copia está disponible?
+SELECT estado FROM copias WHERE id = 103;
+-- Resultado esperado: 'disponible' → CHECK constraint lo garantiza
+
+-- ¿Podemos contar préstamos activos del socio?
+SELECT COUNT(*) FROM prestamos
+WHERE socio_id = 42 AND estado = 'activo';
+-- Resultado esperado: < 3 → se valida en la aplicación
+
+-- Escenario: "No prestar a socio suspendido"
+-- ¿Podemos verificar el estado del socio?
+SELECT estado FROM socios WHERE id = 89;
+-- Resultado esperado: 'suspendido' → se rechaza el préstamo
+
+-- Escenario: "Devolución con retraso"
+-- ¿Podemos actualizar fecha_real_devolucion y estado?
+UPDATE prestamos
+SET fecha_real_devolucion = '2026-07-22',
+    estado = 'retrasado'
+WHERE id = 310;
+-- Y actualizar el estado de la copia:
+UPDATE copias SET estado = 'disponible' WHERE id = 207;`}
+    />
+
+    <Callout tipo="success" titulo="Modelo validado">
+      <p>
+        El modelo ER responde a todos los escenarios BDD. En la siguiente
+        sección (Normalización) verificaremos que no haya redundancias ni
+        anomalías de actualización.
+      </p>
+    </Callout>
+  </section>
+
+  
+</div>
+
+<style>
+  h2 {
+    font-size: var(--fs-2xl);
+    margin-bottom: var(--sp-4);
+  }
+
+  h3 {
+    font-size: var(--fs-lg);
+    margin: var(--sp-5) 0 var(--sp-3);
+  }
+
+  p {
+    font-size: var(--fs-md);
+    line-height: var(--lh-relaxed);
+    margin-bottom: var(--sp-4);
+  }
+
+  .relacion-card {
+    padding: var(--sp-5);
+    background: var(--c-bg-secundario);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+    margin-bottom: var(--sp-4);
+  }
+
+  .relacion-card h3 {
+    margin: 0 0 var(--sp-2) 0;
+    font-family: var(--font-mono);
+    font-size: var(--fs-base);
+  }
+
+  .relacion-card p {
+    font-size: var(--fs-sm);
+    margin: 0;
+  }
+
+  .tabla-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+    margin: var(--sp-3) 0 var(--sp-5);
+  }
+
+  .tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-sm);
+    min-width: 500px;
+  }
+
+  .tabla th {
+    text-align: left;
+    padding: var(--sp-2) var(--sp-3);
+    background: var(--c-bg-terciario);
+    font-weight: var(--fw-semibold);
+    color: var(--c-acento);
+    border-bottom: 2px solid var(--c-borde);
+    white-space: nowrap;
+    font-size: var(--fs-xs);
+  }
+
+  .tabla td {
+    padding: var(--sp-2) var(--sp-3);
+    border-bottom: 1px solid var(--c-borde);
+    vertical-align: top;
+  }
+
+  .tabla tr:last-child td {
+    border-bottom: none;
+  }
+
+  .tabla tr:hover td {
+    background: var(--c-bg-secundario);
+  }
+</style>

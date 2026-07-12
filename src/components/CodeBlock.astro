@@ -1,0 +1,108 @@
+---
+// ============================================================
+// CodeBlock.astro — Bloque de código SQL con Prism.js
+// Features: line-numbers, copy-to-clipboard, filename, tema custom
+// ============================================================
+
+export interface Props {
+  code: string;
+  language?: string;
+  filename?: string;
+  showLineNumbers?: boolean;
+}
+
+const {
+  code,
+  language = 'sql',
+  filename = '',
+  showLineNumbers = true,
+} = Astro.props;
+
+const id = `cb-${Math.random().toString(36).slice(2, 9)}`;
+const label = filename || language.toUpperCase();
+---
+
+<div class="code-block" data-code-block={id}>
+  <div class="code-block__header">
+    <span class="code-block__label">
+      <span class="code-block__filename">{label}</span>
+    </span>
+    <button
+      class="code-block__copy"
+      type="button"
+      aria-label="Copiar código"
+      data-copy-target={id}
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+      </svg>
+      <span class="copy-text">Copiar</span>
+    </button>
+  </div>
+
+  <pre class:list={['language-' + language, { 'line-numbers': showLineNumbers }]} id={id}>
+    <code class:list={['language-' + language]}>{code}</code>
+  </pre>
+</div>
+
+<script>
+  // === Prism.js: import dinámico para highlight ===
+  import Prism from 'prismjs';
+  import 'prismjs/components/prism-sql';
+  import 'prismjs/components/prism-plsql';
+  import 'prismjs/components/prism-bash';
+  import 'prismjs/components/prism-json';
+  import 'prismjs/plugins/line-numbers/prism-line-numbers';
+
+  // === Resaltar todos los bloques al cargar ===
+  function highlightAll() {
+    document.querySelectorAll('[data-code-block] pre code').forEach((el) => {
+      const code = el as HTMLElement;
+      if (code.dataset.highlighted) return;
+      Prism.highlightElement(code);
+      code.dataset.highlighted = 'true';
+    });
+  }
+
+  // === Copy to clipboard ===
+  function initCopyButtons() {
+    document.querySelectorAll('.code-block__copy').forEach((btn) => {
+      if ((btn as HTMLElement).dataset.copyBound) return;
+      (btn as HTMLElement).dataset.copyBound = 'true';
+
+      btn.addEventListener('click', async () => {
+        const targetId = (btn as HTMLElement).dataset.copyTarget;
+        const codeEl = document.getElementById(targetId || '');
+        if (!codeEl) return;
+
+        const text = codeEl.textContent || '';
+        try {
+          await navigator.clipboard.writeText(text);
+          const label = btn.querySelector('.copy-text');
+          if (label) {
+            const original = label.textContent;
+            label.textContent = '¡Copiado!';
+            btn.classList.add('copiado');
+            setTimeout(() => {
+              label.textContent = original;
+              btn.classList.remove('copiado');
+            }, 2000);
+          }
+        } catch (e) {
+          console.error('No se pudo copiar:', e);
+        }
+      });
+    });
+  }
+
+  function initCodeBlock() {
+    highlightAll();
+    initCopyButtons();
+  }
+
+  initCodeBlock();
+
+  // Re-inicializar tras cada transición de View Transitions
+  document.addEventListener('astro:page-load', initCodeBlock);
+</script>

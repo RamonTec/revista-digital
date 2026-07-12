@@ -1,0 +1,381 @@
+/* ============================================================
+   flipbook.css — Estilos del flipbook (StPageFlip)
+   Layout, hojas, controles, responsive
+   ============================================================ */
+
+/* === Body del flipbook === */
+.flipbook-body {
+  overflow: hidden;
+  background: var(--c-bg-primario);
+}
+
+/* === Contenedor principal del flipbook === */
+.flipbook-app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--sp-4);
+  gap: var(--sp-4);
+}
+
+/* === Contenedor del libro === */
+.flipbook-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex: 1;
+  position: relative;
+  perspective: 2000px;
+}
+
+/* === Raíz de StPageFlip === */
+.page-flip-root {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 3 / 2;
+}
+
+/* === Cada hoja del flipbook === */
+.page-flip-page {
+  width: 100%;
+  height: 100%;
+  background: var(--c-bg-secundario);
+  border: 1px solid var(--c-borde);
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  padding: var(--sp-5);
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-borde-activo) transparent;
+}
+
+.page-flip-page::-webkit-scrollbar {
+  width: 6px;
+}
+
+.page-flip-page::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.page-flip-page::-webkit-scrollbar-thumb {
+  background: var(--c-borde-activo);
+  border-radius: var(--r-full);
+}
+
+/* === Hojas hard (portada/contraportada) === */
+.page-flip-page[data-density="hard"] {
+  background: var(--c-bg-primario);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* === Contenido dentro de cada hoja === */
+.hoja-contenido {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+}
+
+.hoja-contenido .section-header {
+  margin-bottom: var(--sp-5);
+}
+
+.hoja-contenido h2 {
+  font-size: var(--fs-xl);
+  margin-bottom: var(--sp-3);
+}
+
+.hoja-contenido h3 {
+  font-size: var(--fs-lg);
+  margin: var(--sp-4) 0 var(--sp-2);
+}
+
+.hoja-contenido p {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-relaxed);
+  margin-bottom: var(--sp-3);
+}
+
+.hoja-contenido .code-block {
+  margin: var(--sp-3) 0;
+}
+
+.hoja-contenido .mermaid-wrap {
+  margin: var(--sp-4) 0;
+  padding: var(--sp-3);
+}
+
+/* === Portada especial dentro del flipbook === */
+.hoja-contenido .portada-hero {
+  min-height: 100%;
+  justify-content: center;
+  padding: var(--sp-5);
+}
+
+.hoja-contenido .portada-hero__titulo {
+  font-size: var(--fs-3xl);
+}
+
+.hoja-contenido .portada-destacadas {
+  margin-top: var(--sp-6);
+  padding-top: var(--sp-4);
+}
+
+.hoja-contenido .portada-meta {
+  margin-top: var(--sp-5);
+  padding: var(--sp-4);
+}
+
+/* === Controles del flipbook === */
+.flip-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-3) var(--sp-5);
+  background: var(--c-bg-secundario);
+  border: 1px solid var(--c-borde);
+  border-radius: var(--r-full);
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+}
+
+.flip-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  background: transparent;
+  border: 1px solid var(--c-borde);
+  border-radius: var(--r-full);
+  color: var(--c-texto);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.flip-btn:hover:not(:disabled) {
+  background: var(--c-acento);
+  color: var(--c-bg-primario);
+  border-color: var(--c-acento);
+}
+
+.flip-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.flip-indicator {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--c-texto-dim);
+  min-width: 80px;
+  text-align: center;
+}
+
+.flip-indicator strong {
+  color: var(--c-acento);
+}
+
+/* === Índice desplegable === */
+.flip-indice-toggle {
+  padding: var(--sp-2) var(--sp-3);
+  background: transparent;
+  border: 1px solid var(--c-borde);
+  border-radius: var(--r-full);
+  color: var(--c-texto-dim);
+  font-size: var(--fs-xs);
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.flip-indice-toggle:hover,
+.flip-indice-toggle.activa {
+  color: var(--c-acento);
+  border-color: var(--c-acento);
+}
+
+.flip-indice-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: var(--c-bg-secundario);
+  border: 1px solid var(--c-borde);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--sp-5);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: all var(--t-normal);
+}
+
+.flip-indice-panel.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.flip-indice-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--sp-4);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--c-borde);
+}
+
+.flip-indice-panel__titulo {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+}
+
+.flip-indice-panel__close {
+  color: var(--c-texto-dim);
+  padding: var(--sp-1);
+  border-radius: var(--r-sm);
+}
+
+.flip-indice-panel__close:hover {
+  color: var(--c-acento);
+}
+
+.flip-indice-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t-normal);
+}
+
+.flip-indice-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* === Items del índice === */
+.flip-indice-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.flip-indice-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: all var(--t-fast);
+  color: var(--c-texto);
+}
+
+.flip-indice-item:hover {
+  background: var(--c-bg-terciario);
+  color: var(--c-acento);
+}
+
+.flip-indice-item.actual {
+  background: rgba(0, 217, 163, 0.08);
+  color: var(--c-acento);
+}
+
+.flip-indice-item__num {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  min-width: 28px;
+}
+
+.flip-indice-item__titulo {
+  font-size: var(--fs-sm);
+  flex: 1;
+}
+
+.flip-indice-item__cat {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--c-texto-muted);
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .flipbook-app {
+    padding: var(--sp-2);
+    gap: var(--sp-2);
+  }
+
+  .page-flip-root {
+    aspect-ratio: 3 / 4;
+    max-width: 420px;
+  }
+
+  .page-flip-page {
+    padding: var(--sp-4);
+  }
+
+  .hoja-contenido .portada-hero__titulo {
+    font-size: var(--fs-2xl);
+  }
+
+  .hoja-contenido h2 {
+    font-size: var(--fs-lg);
+  }
+
+  .hoja-contenido p {
+    font-size: var(--fs-xs);
+  }
+
+  .flip-controls {
+    gap: var(--sp-2);
+    padding: var(--sp-2) var(--sp-3);
+  }
+
+  .flip-btn {
+    padding: var(--sp-2) var(--sp-3);
+    font-size: var(--fs-xs);
+  }
+
+  .flip-btn span {
+    display: none;
+  }
+
+  .flip-indicator {
+    font-size: var(--fs-xs);
+    min-width: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-flip-root {
+    aspect-ratio: 3 / 5;
+    max-width: 360px;
+  }
+
+  .hoja-contenido .grid-2-col,
+  .hoja-contenido .grid-3-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* === prefers-reduced-motion === */
+@media (prefers-reduced-motion: reduce) {
+  .flip-indice-panel,
+  .flip-indice-overlay {
+    transition: none;
+  }
+}

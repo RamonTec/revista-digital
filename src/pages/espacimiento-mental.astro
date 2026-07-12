@@ -1,0 +1,14 @@
+---
+import RevistaLayout from '../layouts/RevistaLayout.astro';
+import NavPaginas from '../components/NavPaginas.astro';
+import EspacimientoMental from '../sections/EspacimientoMental.astro';
+---
+
+<RevistaLayout
+  titulo="Espacimiento Mental"
+  seccionActiva="espacimiento-mental"
+  descripcion="Pausa, reflexión y bienestar mental del desarrollador"
+>
+  <EspacimientoMental />
+  <NavPaginas actual="espacimiento-mental" />
+</RevistaLayout>

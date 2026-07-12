@@ -1,0 +1,411 @@
+---
+// caso-practico-normalizacion.astro — Normalización 1NF→3NF
+import SectionHeader from '../components/SectionHeader.astro';
+import Mermaid from '../components/Mermaid.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+import Callout from '../components/Callout.astro';
+---
+
+<div class="hoja-contenido">
+<SectionHeader
+    numero="08"
+    titulo="Caso Práctico: Normalización"
+    descripcion="De 1NF a 3NF: eliminando redundancias y anomalías de actualización"
+    categoria="practica"
+  />
+
+  <!-- === Introducción === -->
+  <section data-reveal>
+    <h2>¿Qué es la normalización?</h2>
+
+    <p>
+      La <strong>normalización</strong> es el proceso de organizar las
+      tablas y columnas de una base de datos para minimizar la
+      <em>redundancia</em> y eliminar las <em>anomalías</em> de
+      actualización (inserción, modificación y borrado). Fue formalizada
+      por Edgar F. Codd en 1971.
+    </p>
+
+    <p>
+      Existen cinco formas normales, pero en la práctica las tres primeras
+      (<strong>1NF, 2NF, 3NF</strong>) resuelven el 95% de los problemas
+      de diseño. En esta sección aplicaremos las tres a nuestro modelo de
+      biblioteca.
+    </p>
+
+    <Callout tipo="info" titulo="Regla mnemotécnica">
+      <p>
+        <strong>1NF:</strong> atomicidad (sin listas en una columna).
+        <strong>2NF:</strong> dependencia completa de la PK (sin dependencias
+        parciales de claves compuestas).
+        <strong>3NF:</strong> dependencia directa de la PK (sin dependencias
+        transitivas).
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Punto de partida: tabla desnormalizada === -->
+  <section data-reveal>
+    <h2>Punto de partida: la tabla «a-normalizar»</h2>
+
+    <p>
+      Imaginemos que alguien sin experiencia diseña una sola tabla para
+      todo. Veamos los problemas que surgen:
+    </p>
+
+    <CodeBlock
+      language="sql"
+      filename="tabla_desnormalizada.sql"
+      code={`-- Tabla única que mezcla todo (¡NO HACER ESTO!)
+CREATE TABLE biblioteca_todo (
+  prestamo_id    INT,
+  socio_nombre   VARCHAR(100),
+  socio_email    VARCHAR(255),
+  socio_estado   VARCHAR(15),
+  libro_isbn     VARCHAR(17),
+  libro_titulo    VARCHAR(255),
+  libro_autor    VARCHAR(150),
+  copia_estado   VARCHAR(15),
+  fecha_prestamo DATE,
+  fecha_devolucion DATE,
+  generos        VARCHAR(200)  -- "ficcion,drama,thriller" ← ¡viola 1NF!
+);`}
+    />
+
+    <h3>Anomalías que presenta esta tabla</h3>
+    <ul class="anomalias-list">
+      <li><strong class="texto-error">Anomalía de inserción:</strong> no puedo registrar un libro nuevo sin que tenga un préstamo asociado.</li>
+      <li><strong class="texto-error">Anomalía de modificación:</strong> si el email del socio cambia, debo actualizarlo en todas las filas de sus préstamos.</li>
+      <li><strong class="texto-error">Anomalía de borrado:</strong> si elimino el último préstamo de un libro, pierdo toda la información del libro.</li>
+      <li><strong class="texto-error">Redundancia:</strong> el título del libro se repite en cada préstamo de cada copia.</li>
+    </ul>
+  </section>
+
+  <hr />
+
+  <!-- === 1NF === -->
+  <section data-reveal>
+    <h2>Primera Forma Normal (1NF): atomicidad</h2>
+
+    <p>
+      Una tabla está en <strong>1NF</strong> si todos sus atributos son
+      <em>atómicos</em> (indivisibles) y no hay grupos repetitivos. La
+      columna <code>generos</code> con valores separados por comas viola
+      esta regla.
+    </p>
+
+    <div class="grid-2-col">
+      <div class="nf-card tarjeta">
+        <h3 class="texto-error">❌ Viola 1NF</h3>
+        <pre class="mono"><code>generos = "ficcion,drama,thriller"</code></pre>
+        <p>Un solo campo contiene múltiples valores. No se puede buscar por género sin <code>LIKE</code> (lento y propenso a errores).</p>
+      </div>
+      <div class="nf-card tarjeta">
+        <h3 class="texto-success">✓ Cumple 1NF</h3>
+        <p>Creamos una tabla <code>libros_generos</code> (N:M):</p>
+        <pre class="mono"><code>libros_generos(
+  libro_id  FK,
+  genero    VARCHAR(50)
+)</code></pre>
+      </div>
+    </div>
+
+    <Callout tipo="warn" titulo="Decisión de diseño">
+      <p>
+        En la sección 07 mantuvimos <code>genero</code> como columna
+        única para simplificar. Al normalizar, lo elevamos a tabla
+        independiente si un libro puede tener múltiples géneros. Para
+        esta edición lo dejamos como columna única (1 género por libro),
+        pero la evolución a N:M es directa.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === 2NF === -->
+  <section data-reveal>
+    <h2>Segunda Forma Normal (2NF): dependencia completa</h2>
+
+    <p>
+      Una tabla está en <strong>2NF</strong> si está en 1NF y
+      <em>todos los atributos no-clave dependen de toda la clave
+      primaria</em>, no de una parte de ella. Solo aplica a tablas con
+      <strong>PK compuesta</strong>.
+    </p>
+
+    <p>
+      En nuestro modelo, todas las PK son simples (<code>SERIAL</code>),
+      por lo que <strong>ya cumplen 2NF por construction</strong>. Para
+      ilustrar el problema, imaginemos una tabla con PK compuesta:
+    </p>
+
+    <CodeBlock
+      language="sql"
+      filename="ejemplo_2nf.sql"
+      code={`-- Tabla con PK compuesta que VIOLA 2NF:
+CREATE TABLE prestamos_libros_mal (
+  prestamo_id  INT,
+  libro_isbn   VARCHAR(17),
+  socio_nombre VARCHAR(100),   -- depende solo de socio, no de la PK
+  libro_titulo VARCHAR(255),   -- depende solo de libro_isbn, no de la PK
+  fecha        DATE,            -- sí depende de toda la PK
+  PRIMARY KEY (prestamo_id, libro_isbn)
+);
+
+-- Solución 2NF: separar en tres tablas
+-- prestamos(prestamo_id PK, socio_id FK, fecha)
+-- libros(libro_isbn PK, titulo)
+-- prestamos_libros(prestamo_id FK, libro_isbn FK, PK compuesta)`}
+    />
+  </section>
+
+  <hr />
+
+  <!-- === 3NF === -->
+  <section data-reveal>
+    <h2>Tercera Forma Normal (3NF): sin dependencias transitivas</h2>
+
+    <p>
+      Una tabla está en <strong>3NF</strong> si está en 2NF y
+      <em>ningún atributo no-clave depende transitivamente de la clave
+      primaria</em>. Es decir: los atributos no-clave deben depender
+      <strong>solo</strong> de la PK, no de otros atributos no-clave.
+    </p>
+
+    <p>
+      En nuestro modelo, verificamos cada tabla. La única candidata a
+      problema es <code>socios</code> si tuviéramos, por ejemplo,
+      <code>codigo_postal</code> y <code>ciudad</code> en la misma tabla
+      (la ciudad depende del código postal, no del socio).
+    </p>
+
+    <div class="grid-2-col">
+      <div class="nf-card tarjeta">
+        <h3 class="texto-error">❌ Viola 3NF (hipotético)</h3>
+        <pre class="mono"><code>socios(
+  id PK,
+  nombre,
+  codigo_postal,
+  ciudad  -- depende de codigo_postal
+)</code></pre>
+        <p><code>ciudad</code> depende de <code>codigo_postal</code>, no de <code>id</code>. Hay dependencia transitiva.</p>
+      </div>
+      <div class="nf-card tarjeta">
+        <h3 class="texto-success">✓ Cumple 3NF</h3>
+        <pre class="mono"><code>socios(
+  id PK, nombre, codigo_postal FK
+)
+codigos_postales(
+  codigo PK, ciudad
+)</code></pre>
+        <p><code>ciudad</code> se mueve a su propia tabla. <code>socios</code> solo referencia el código postal.</p>
+      </div>
+    </div>
+
+    <Callout tipo="success" titulo="Nuestro modelo ya está en 3NF">
+      <p>
+        El modelo de la sección 07 no tiene dependencias transitivas:
+        cada columna depende directamente de la PK de su tabla. No
+        necesitamos separar nada más.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Diagrama final normalizado === -->
+  <section data-reveal>
+    <h2>Modelo final normalizado (3NF)</h2>
+
+    <Mermaid
+      caption="Figura 8.1 — Modelo final en 3NF con todas las dependencias resueltas"
+      diagram={`erDiagram
+        SOCIOS ||--o{ PRESTAMOS : "realiza"
+        COPIAS ||--o{ PRESTAMOS : "es objeto de"
+        LIBROS ||--o{ COPIAS : "tiene"
+
+        SOCIOS {
+          int id PK
+          string nombre
+          string email UK
+          string telefono
+          string estado
+          date fecha_alta
+        }
+
+        LIBROS {
+          int id PK
+          string isbn UK
+          string titulo
+          string autor
+          int anio_publicacion
+          string genero
+        }
+
+        COPIAS {
+          int id PK
+          int libro_id FK
+          string estado
+          date fecha_adquisicion
+        }
+
+        PRESTAMOS {
+          int id PK
+          int socio_id FK
+          int copia_id FK
+          date fecha_prestamo
+          date fecha_devolucion
+          date fecha_real_devolucion
+          string estado
+        }`}
+    />
+  </section>
+
+  <hr />
+
+  <!-- === Resumen formas normales === -->
+  <section data-reveal>
+    <h2>Resumen: las tres formas normales</h2>
+
+    <div class="tabla-wrap">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Forma</th>
+            <th>Regla</th>
+            <th>Problema que resuelve</th>
+            <th>Verbo clave</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="texto-acento mono">1NF</td>
+            <td>Atomicidad: valores indivisibles</td>
+            <td>Listas o conjuntos en una columna</td>
+            <td><strong>Atomizar</strong></td>
+          </tr>
+          <tr>
+            <td class="texto-acento mono">2NF</td>
+            <td>Dependencia completa de la PK</td>
+            <td>Dependencias parciales en PK compuesta</td>
+            <td><strong>Separar</strong></td>
+          </tr>
+          <tr>
+            <td class="texto-acento mono">3NF</td>
+            <td>Dependencia directa de la PK</td>
+            <td>Dependencias transitivas entre no-claves</td>
+            <td><strong>Independizar</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <Callout tipo="info" titulo="¿Siempre normalizar a 3NF?">
+      <p>
+        En OLTP (transaccional), sí. En OLAP (analítico / data warehouse)
+        se suele <em>desnormalizar</em> deliberadamente para acelerar
+        lecturas agregadas. La desnormalización es una optimización
+        consciente, no un error de diseño.
+      </p>
+    </Callout>
+  </section>
+
+  
+</div>
+
+<style>
+  h2 {
+    font-size: var(--fs-2xl);
+    margin-bottom: var(--sp-4);
+  }
+
+  h3 {
+    font-size: var(--fs-lg);
+    margin: var(--sp-5) 0 var(--sp-3);
+  }
+
+  p {
+    font-size: var(--fs-md);
+    line-height: var(--lh-relaxed);
+    margin-bottom: var(--sp-4);
+  }
+
+  .anomalias-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    margin: var(--sp-4) 0;
+  }
+
+  .anomalias-list li {
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--c-bg-secundario);
+    border-left: 3px solid var(--c-error);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+    font-size: var(--fs-sm);
+  }
+
+  .nf-card {
+    padding: var(--sp-5);
+    background: var(--c-bg-secundario);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+  }
+
+  .nf-card h3 {
+    margin: 0 0 var(--sp-3) 0;
+    font-size: var(--fs-base);
+  }
+
+  .nf-card p {
+    font-size: var(--fs-sm);
+    margin-top: var(--sp-3);
+    margin-bottom: 0;
+  }
+
+  .nf-card pre {
+    background: var(--c-bg-codigo);
+    padding: var(--sp-3);
+    border-radius: var(--r-sm);
+    overflow-x: auto;
+    font-size: var(--fs-xs);
+    line-height: var(--lh-normal);
+    color: var(--c-sql);
+  }
+
+  .tabla-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+    margin: var(--sp-5) 0;
+  }
+
+  .tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-sm);
+    min-width: 500px;
+  }
+
+  .tabla th {
+    text-align: left;
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--c-bg-terciario);
+    font-weight: var(--fw-semibold);
+    color: var(--c-acento);
+    border-bottom: 2px solid var(--c-borde);
+  }
+
+  .tabla td {
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--c-borde);
+    vertical-align: top;
+  }
+
+  .tabla tr:last-child td {
+    border-bottom: none;
+  }
+</style>

@@ -1,0 +1,326 @@
+---
+// arquitectura-modelado.astro — Principios de arquitectura y modelado
+import SectionHeader from '../components/SectionHeader.astro';
+import Mermaid from '../components/Mermaid.astro';
+import Callout from '../components/Callout.astro';
+---
+
+<div class="hoja-contenido">
+<SectionHeader
+    numero="04"
+    titulo="Arquitectura y Modelado"
+    descripcion="Del comportamiento a la estructura: principios de diseño y modelado de datos"
+    categoria="teoria"
+  />
+
+  <!-- === Arquitectura por capas === -->
+  <section data-reveal>
+    <h2>Arquitectura por capas: separación de responsabilidades</h2>
+
+    <p>
+      Una arquitectura <strong>por capas</strong> organiza el software en
+      niveles con responsabilidades claras. Cada capa depende solo de la
+      inmediatamente inferior, lo que reduce el acoplamiento y facilita
+      el cambio. En el contexto de un sistema con base de datos, el patrón
+      más común es la <em>arquitectura en 3 capas</em>.
+    </p>
+
+    <Mermaid
+      caption="Figura 4.1 — Arquitectura en 3 capas con flujo de dependencia descendente"
+      diagram={`flowchart TB
+        subgraph Presentacion ["Capa de Presentación"]
+          P["UI / API REST / Controladores"]
+        end
+
+        subgraph Dominio ["Capa de Dominio / Lógica"]
+          D1["Servicios de aplicación"]
+          D2["Reglas de negocio"]
+          D3["Casos de uso (BDD)"]
+        end
+
+        subgraph Persistencia ["Capa de Persistencia"]
+          PS1["Repositorios"]
+          PS2["ORM / DAO"]
+          PS3["Base de datos"]
+        end
+
+        Presentacion --> Dominio
+        Dominio --> Persistencia
+
+        style Presentacion fill:#0f1419,stroke:#00d9a3,color:#e6edf3
+        style Dominio fill:#0f1419,stroke:#4d9eff,color:#e6edf3
+        style Persistencia fill:#0f1419,stroke:#ffa657,color:#e6edf3`}
+    />
+
+    <Callout tipo="warn" titulo="Regla de oro">
+      <p>
+        Las dependencias fluyen <strong>solo hacia abajo</strong>. La capa
+        de presentación nunca accede directamente a la base de datos, y la
+        capa de persistencia no conoce las reglas de negocio.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Arquitectura hexagonal === -->
+  <section data-reveal>
+    <h2>Arquitectura hexagonal (Ports & Adapters)</h2>
+
+    <p>
+      La <strong>arquitectura hexagonal</strong>, propuesta por Alistair
+      Cockburn, aísla el dominio de las tecnologías externas mediante
+      <em>ports</em> (interfaces) y <em>adapters</em> (implementaciones).
+      El dominio no sabe si se conecta a PostgreSQL, MongoDB o una API
+      externa: solo define qué necesita.
+    </p>
+
+    <Mermaid
+      caption="Figura 4.2 — Arquitectura hexagonal: el dominio en el centro, los adaptadores en los bordes"
+      diagram={`flowchart LR
+        subgraph Driving ["Adaptadores driving (entrada)"]
+          R["API REST"]
+          C["Consola CLI"]
+          T["Tests BDD"]
+        end
+
+        subgraph Core ["Núcleo de dominio"]
+          P["Ports\n(interfaces)"]
+          A["Aplicación\n(casos de uso)"]
+          D["Modelo de dominio"]
+        end
+
+        subgraph Driven ["Adaptadores driven (salida)"]
+          SQL["PostgreSQL"]
+          MONGO["MongoDB"]
+          CACHE["Redis"]
+        end
+
+        Driving --> P
+        P --> A
+        A --> D
+        A --> P
+        P --> Driven
+
+        style Core fill:#0f1419,stroke:#00d9a3,color:#e6edf3,stroke-width:2px
+        style Driving fill:#0f1419,stroke:#4d9eff,color:#e6edf3
+        style Driven fill:#0f1419,stroke:#ffa657,color:#e6edf3`}
+    />
+  </section>
+
+  <hr />
+
+  <!-- === Modelado de datos === -->
+  <section data-reveal>
+    <h2>Modelado de datos: del concepto a la tabla</h2>
+
+    <p>
+      El <strong>modelado de datos</strong> es el proceso de traducir
+      requisitos del negocio a una estructura de datos que un SGBD puede
+      almacenar eficientemente. Consta de tres niveles:
+    </p>
+
+    <div class="grid-3-col">
+      <div class="modelo-card tarjeta">
+        <span class="modelo-card__num texto-acento mono">1</span>
+        <h3>Modelo conceptual</h3>
+        <p>
+          Entidades y relaciones a alto nivel, sin tipos ni atributos
+          técnicos. Representado en un <em>diagrama ER</em>. Independiente
+          de la tecnología.
+        </p>
+      </div>
+      <div class="modelo-card tarjeta">
+        <span class="modelo-card__num texto-acento mono">2</span>
+        <h3>Modelo lógico</h3>
+        <p>
+          Atributos, claves primarias y foráneas, cardinalidades. Define
+          la estructura sin pensar en el SGBD concreto. Aquí se aplica
+          la <em>normalización</em>.
+        </p>
+      </div>
+      <div class="modelo-card tarjeta">
+        <span class="modelo-card__num texto-acento mono">3</span>
+        <h3>Modelo físico</h3>
+        <p>
+          Tipos de datos del SGBD, índices, constraints, particiones.
+          Es el modelo que se traduce directamente a <code>CREATE TABLE</code>
+          en SQL.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- === Entidad-relación === -->
+  <section data-reveal>
+    <h2>Modelo entidad-relación (ER): conceptos clave</h2>
+
+    <p>
+      El modelo <strong>entidad-relación</strong> (ER), propuesto por Peter
+      Chen en 1976, es el lenguaje visual estándar para modelado conceptual.
+      Sus elementos fundamentales son:
+    </p>
+
+    <Mermaid
+      caption="Figura 4.3 — Diagrama ER de ejemplo: Socio, Libro y Préstamo"
+      diagram={`erDiagram
+        SOCIO ||--o{ PRESTAMO : "realiza"
+        LIBRO ||--o{ PRESTAMO : "es objeto de"
+
+        SOCIO {
+          int id PK
+          string nombre
+          string email UK
+          string telefono
+          date fecha_alta
+          string estado
+        }
+
+        LIBRO {
+          int id PK
+          string isbn UK
+          string titulo
+          string autor
+          int anio_publicacion
+          string estado
+        }
+
+        PRESTAMO {
+          int id PK
+          int socio_id FK
+          int libro_id FK
+          date fecha_prestamo
+          date fecha_devolucion
+          string estado
+        }`}
+    />
+
+    <h3>Cardinalidades</h3>
+    <ul class="lista-conceptos">
+      <li><strong>1:1</strong> — Uno a uno. Un socio tiene un carnet.</li>
+      <li><strong>1:N</strong> — Uno a muchos. Un socio realiza muchos préstamos.</li>
+      <li><strong>N:M</strong> — Muchos a muchos. Se resuelve con una tabla intermedia.</li>
+    </ul>
+
+    <Callout tipo="info" titulo="Notación Crow's Foot">
+      <p>
+        Usamos notación <em>Crow's Foot</em> (pata de cuervo): las líneas
+        con <code>{"||"}</code> indican «uno y solo uno», <code>{"o{"}</code>
+        indica «cero o muchos». Es la notación más extendida en herramientas
+        modernas de modelado.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Principios de modelado === -->
+  <section data-reveal>
+    <h2>Principios de buen modelado</h2>
+
+    <div class="grid-2-col">
+      <div class="principio tarjeta">
+        <h3 class="texto-alt">Single Responsibility</h3>
+        <p>
+          Cada tabla representa una sola entidad del negocio. Si una tabla
+          mezcla dos conceptos (ej: <code>cliente_y_direccion</code>),
+          es señal de que falta normalizar.
+        </p>
+      </div>
+
+      <div class="principio tarjeta">
+        <h3 class="texto-alt">Nombres significativos</h3>
+        <p>
+          Tablas en plural (<code>libros</code>, <code>socios</code>),
+          columnas en singular (<code>titulo</code>, <code>nombre</code>).
+          Evitar abreviaturas crípticas y prefijos innecesarios.
+        </p>
+      </div>
+
+      <div class="principio tarjeta">
+        <h3 class="texto-alt">Claves estables</h3>
+        <p>
+          La clave primaria debe ser inmutable. Usar <code>SURROGATE
+          KEY</code> (ID autoincremental) cuando no exista un identificador
+          natural estable y único.
+        </p>
+      </div>
+
+      <div class="principio tarjeta">
+        <h3 class="texto-alt">Constraints sobre esperanzas</h3>
+        <p>
+          Las reglas de integridad (unicidad, no nulo, rangos, foreign keys)
+          deben estar en el esquema, no en el código de la aplicación. La
+          base de datos es la última línea de defensa.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  
+</div>
+
+<style>
+  h2 {
+    font-size: var(--fs-2xl);
+    margin-bottom: var(--sp-4);
+  }
+
+  h3 {
+    font-size: var(--fs-lg);
+    margin: var(--sp-5) 0 var(--sp-3);
+  }
+
+  p {
+    font-size: var(--fs-md);
+    line-height: var(--lh-relaxed);
+    margin-bottom: var(--sp-4);
+  }
+
+  .modelo-card,
+  .principio {
+    padding: var(--sp-5);
+    background: var(--c-bg-secundario);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+  }
+
+  .modelo-card__num {
+    display: inline-block;
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-black);
+    margin-bottom: var(--sp-2);
+  }
+
+  .modelo-card h3,
+  .principio h3 {
+    margin: 0 0 var(--sp-2) 0;
+  }
+
+  .modelo-card p,
+  .principio p {
+    font-size: var(--fs-sm);
+    margin-bottom: 0;
+  }
+
+  .lista-conceptos {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    margin: var(--sp-4) 0;
+  }
+
+  .lista-conceptos li {
+    padding: var(--sp-2) var(--sp-4);
+    background: var(--c-bg-secundario);
+    border-left: 3px solid var(--c-acento);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+    font-size: var(--fs-sm);
+  }
+
+  .lista-conceptos code {
+    color: var(--c-sql);
+  }
+</style>

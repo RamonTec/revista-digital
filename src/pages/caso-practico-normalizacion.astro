@@ -1,0 +1,14 @@
+---
+import RevistaLayout from '../layouts/RevistaLayout.astro';
+import NavPaginas from '../components/NavPaginas.astro';
+import CasoNormalizacion from '../sections/CasoNormalizacion.astro';
+---
+
+<RevistaLayout
+  titulo="Caso Práctico: Normalización"
+  seccionActiva="caso-practico-normalizacion"
+  descripcion="De 1NF a 3NF: eliminando redundancias y anomalías en el modelo"
+>
+  <CasoNormalizacion />
+  <NavPaginas actual="caso-practico-normalizacion" />
+</RevistaLayout>

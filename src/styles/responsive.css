@@ -1,0 +1,166 @@
+/* ============================================================
+   responsive.css — Breakpoints y adaptaciones móviles
+   ============================================================ */
+
+/* === Mobile first: estilos base aplican a móvil === */
+
+/* === Tablet (≥640px) === */
+@media (min-width: 640px) {
+  :root {
+    --fs-base: 1.0625rem;
+  }
+
+  .contenedor {
+    padding: 0 var(--sp-6);
+  }
+}
+
+/* === Tablet grande (≥768px) === */
+@media (min-width: 768px) {
+  .grid-2-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-5);
+  }
+
+  .grid-3-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-4);
+  }
+}
+
+/* === Desktop (≥1024px) === */
+@media (min-width: 1024px) {
+  :root {
+    --fs-base: 1.125rem;
+  }
+
+  .contenido-revista {
+    padding: var(--sp-8) var(--sp-8) var(--sp-10);
+  }
+
+  .grid-diagrama-texto {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-7);
+    align-items: start;
+  }
+}
+
+/* === Desktop grande (≥1440px) === */
+@media (min-width: 1440px) {
+  .contenedor {
+    max-width: 1320px;
+  }
+
+  .contenido-revista {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: var(--sp-9) var(--sp-8) var(--sp-10);
+  }
+}
+
+/* === Móvil: navegación como menú inferior === */
+@media (max-width: 1023px) {
+  .nav-lateral {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    width: 100%;
+    height: auto;
+    max-height: 60vh;
+    transform: translateY(100%);
+    transition: transform var(--t-normal);
+    z-index: var(--z-nav);
+    border-top: 1px solid var(--c-borde);
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    background: var(--c-bg-secundario);
+    box-shadow: var(--shadow-lg);
+    overflow-y: auto;
+  }
+
+  .nav-lateral.abierta {
+    transform: translateY(0);
+  }
+
+  .nav-toggle {
+    display: flex;
+  }
+
+  .contenido-revista {
+    padding-bottom: 80px;
+  }
+}
+
+/* === Desktop: navegación lateral fija === */
+@media (min-width: 1024px) {
+  .nav-toggle {
+    display: none;
+  }
+
+  .nav-lateral {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    transform: none;
+    border-right: 1px solid var(--c-borde);
+    border-top: none;
+    border-radius: 0;
+  }
+}
+
+/* === Ajustes de tipografía en móvil === */
+@media (max-width: 639px) {
+  :root {
+    --fs-3xl: 2rem;
+    --fs-4xl: 2.5rem;
+    --fs-display: 3rem;
+  }
+
+  h1 {
+    font-size: var(--fs-2xl);
+  }
+
+  h2 {
+    font-size: var(--fs-xl);
+  }
+
+  .contenido-revista {
+    padding: var(--sp-5) var(--sp-4) 100px;
+  }
+
+  .grid-2-col,
+  .grid-3-col,
+  .grid-diagrama-texto {
+    grid-template-columns: 1fr;
+  }
+
+  blockquote {
+    padding: var(--sp-3) var(--sp-4);
+    margin: var(--sp-4) 0;
+  }
+}
+
+/* === Print: versión imprimible de la revista === */
+@media print {
+  .nav-lateral,
+  .nav-toggle,
+  .progress-bar,
+  .scroll-indicador {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+
+  .contenido-revista {
+    padding: 0;
+    max-width: 100%;
+  }
+}

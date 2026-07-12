@@ -1,0 +1,133 @@
+/* ============================================================
+   tokens.css — Sistema de diseño de la revista BDD
+   Paleta, tipografía, espaciado, breakpoints, sombras
+   ============================================================ */
+
+:root {
+  /* === Color: fondo editorial oscuro === */
+  --c-bg-primario: #0f1419;
+  --c-bg-secundario: #1a2332;
+  --c-bg-terciario: #243044;
+  --c-bg-codigo: #161b22;
+
+  /* === Color: acentos === */
+  --c-acento: #00d9a3;
+  --c-acento-hover: #00f5b8;
+  --c-acento-alt: #4d9eff;
+  --c-acento-alt-hover: #6db5ff;
+
+  /* === Color: texto === */
+  --c-texto: #e6edf3;
+  --c-texto-dim: #8b949e;
+  --c-texto-muted: #6e7681;
+
+  /* === Color: semánticos === */
+  --c-sql: #ffa657;
+  --c-warn: #f0883e;
+  --c-error: #ff6b6b;
+  --c-info: #4d9eff;
+  --c-success: #00d9a3;
+
+  /* === Color: bordes === */
+  --c-borde: #2d3b4f;
+  --c-borde-activo: #3d5169;
+
+  /* === Tipografía === */
+  --font-display: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-md: 1.125rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.5rem;
+  --fs-2xl: 2rem;
+  --fs-3xl: 2.75rem;
+  --fs-4xl: 3.5rem;
+  --fs-display: 5rem;
+
+  --lh-tight: 1.2;
+  --lh-normal: 1.6;
+  --lh-relaxed: 1.8;
+
+  --fw-light: 300;
+  --fw-normal: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-black: 900;
+
+  /* === Espaciado === */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+  --sp-8: 4rem;
+  --sp-9: 6rem;
+  --sp-10: 8rem;
+
+  /* === Layout === */
+  --nav-width: 280px;
+  --nav-width-collapsed: 64px;
+  --content-max: 70ch;
+  --content-wide: 1200px;
+
+  /* === Radios === */
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 16px;
+  --r-full: 9999px;
+
+  /* === Sombras === */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px rgba(0, 217, 163, 0.15);
+  --shadow-glow-alt: 0 0 20px rgba(77, 158, 255, 0.15);
+
+  /* === Transiciones === */
+  --t-fast: 150ms ease;
+  --t-normal: 300ms ease;
+  --t-slow: 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  --t-reveal: 700ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* === Z-index === */
+  --z-nav: 100;
+  --z-progress: 200;
+  --z-overlay: 300;
+  --z-code-copy: 10;
+}
+
+/* === Modo claro alternativo === */
+@media (prefers-color-scheme: light) {
+  :root {
+    --c-bg-primario: #fafbfc;
+    --c-bg-secundario: #ffffff;
+    --c-bg-terciario: #f0f2f5;
+    --c-bg-codigo: #f6f8fa;
+    --c-texto: #1f2328;
+    --c-texto-dim: #59636e;
+    --c-texto-muted: #818b98;
+    --c-borde: #d0d7de;
+    --c-borde-activo: #afb8c1;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+    --shadow-glow: 0 0 20px rgba(0, 217, 163, 0.1);
+    --shadow-glow-alt: 0 0 20px rgba(77, 158, 255, 0.1);
+  }
+}
+
+/* === Breakpoints (referencia, uso con media queries) === */
+/*
+  --bp-sm:  640px
+  --bp-md:  768px
+  --bp-lg:  1024px
+  --bp-xl:  1280px
+  --bp-2xl: 1440px
+*/

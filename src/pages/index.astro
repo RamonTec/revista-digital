@@ -1,0 +1,19 @@
+---
+import RevistaLayout from '../layouts/RevistaLayout.astro';
+import NavPaginas from '../components/NavPaginas.astro';
+import Portada from '../sections/Portada.astro';
+---
+
+<RevistaLayout
+  titulo="Portada"
+  seccionActiva="portada"
+  descripcion="Presentación de la edición"
+>
+  <Portada />
+  <NavPaginas actual="portada" />
+
+  <!-- Redirección a flipbook si el navegador tiene JavaScript -->
+  <script>
+    import '../scripts/redirect-to-flipbook';
+  </script>
+</RevistaLayout>

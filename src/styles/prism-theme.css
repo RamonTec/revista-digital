@@ -1,0 +1,265 @@
+/* ============================================================
+   prism-theme.css — Tema custom de Prism.js para SQL
+   Basado en paleta oscura editorial con acento SQL naranjo
+   ============================================================ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+  color: var(--c-texto);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-relaxed);
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  tab-size: 2;
+  hyphens: none;
+}
+
+/* === Bloque de código === */
+pre[class*="language-"] {
+  background: var(--c-bg-codigo);
+  margin: 0;
+  padding: var(--sp-5);
+  overflow: auto;
+  border-radius: 0 0 var(--r-md) var(--r-md);
+  border: 1px solid var(--c-borde);
+  border-top: none;
+}
+
+/* === Scrollbar custom === */
+pre[class*="language-"]::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+pre[class*="language-"]::-webkit-scrollbar-track {
+  background: var(--c-bg-primario);
+}
+
+pre[class*="language-"]::-webkit-scrollbar-thumb {
+  background: var(--c-borde-activo);
+  border-radius: var(--r-full);
+}
+
+pre[class*="language-"]::-webkit-scrollbar-thumb:hover {
+  background: var(--c-acento);
+}
+
+/* === Sombra lateral para indicar overflow horizontal === */
+pre[class*="language-"] {
+  background-image:
+    linear-gradient(to right, var(--c-bg-codigo) 30%, transparent),
+    linear-gradient(to right, transparent, var(--c-bg-codigo) 70%);
+  background-position: left center, right center;
+  background-repeat: no-repeat;
+  background-size: 40px 100%, 40px 100%;
+  background-attachment: local, local;
+}
+
+/* === Inline code === */
+:not(pre) > code[class*="language-"] {
+  background: var(--c-bg-terciario);
+  padding: 0.15em 0.4em;
+  border-radius: var(--r-sm);
+  font-size: 0.9em;
+  color: var(--c-sql);
+}
+
+/* === Tokens SQL: palabras clave === */
+.token.keyword {
+  color: var(--c-acento);
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
+  font-size: 0.85em;
+  letter-spacing: 0.05em;
+}
+
+/* CREATE, TABLE, SELECT, INSERT, ALTER, DROP, etc. */
+.token.keyword.keyword-create,
+.token.keyword.keyword-table,
+.token.keyword.keyword-select,
+.token.keyword.keyword-insert,
+.token.keyword.keyword-update,
+.token.keyword.keyword-delete,
+.token.keyword.keyword-alter,
+.token.keyword.keyword-drop {
+  color: var(--c-acento);
+}
+
+/* === Tokens: funciones === */
+.token.function {
+  color: var(--c-acento-alt);
+}
+
+/* === Tokens: strings === */
+.token.string,
+.token.attr-value,
+.token.char {
+  color: var(--c-sql);
+}
+
+/* === Tokens: números === */
+.token.number,
+.token.boolean,
+.token.constant {
+  color: #d2a8ff;
+}
+
+/* === Tokens: comentarios === */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: var(--c-texto-muted);
+  font-style: italic;
+  font-weight: var(--fw-light);
+}
+
+/* === Tokens: operadores y puntuación === */
+.token.operator,
+.token.punctuation {
+  color: var(--c-texto-dim);
+}
+
+.token.operator {
+  background: transparent;
+}
+
+/* === Tokens: tipos de datos SQL === */
+.token.class-name,
+.token.builtin {
+  color: #79c0ff;
+}
+
+/* === Tokens: variables y placeholders === */
+.token.variable,
+.token.placeholder {
+  color: #ffa198;
+  font-style: italic;
+}
+
+/* === Tokens: propiedades y atributos === */
+.token.property,
+.token.attr-name,
+.token.tag {
+  color: #7ee787;
+}
+
+/* === Line numbers === */
+.line-numbers .line-numbers-rows {
+  border-right: 1px solid var(--c-borde);
+  padding-right: var(--sp-3);
+  margin-right: var(--sp-4);
+}
+
+.line-numbers-rows > span::before {
+  color: var(--c-texto-muted);
+  font-size: var(--fs-xs);
+  counter-increment: linenumber;
+  content: counter(linenumber);
+}
+
+/* === Wrapper del bloque de código === */
+.code-block {
+  margin: var(--sp-5) 0;
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.code-block__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--c-bg-terciario);
+  border: 1px solid var(--c-borde);
+  border-bottom: none;
+  border-radius: var(--r-md) var(--r-md) 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--c-texto-dim);
+}
+
+.code-block__label {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.code-block__label::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-sql);
+}
+
+.code-block__filename {
+  color: var(--c-texto);
+  font-weight: var(--fw-medium);
+}
+
+.code-block__copy {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: var(--sp-1) var(--sp-2);
+  font-size: var(--fs-xs);
+  color: var(--c-texto-dim);
+  border-radius: var(--r-sm);
+  transition: all var(--t-fast);
+}
+
+.code-block__copy:hover {
+  color: var(--c-acento);
+  background: rgba(0, 217, 163, 0.1);
+}
+
+.code-block__copy.copiado {
+  color: var(--c-success);
+}
+
+/* === Modo claro === */
+@media (prefers-color-scheme: light) {
+  .token.keyword {
+    color: #0550ae;
+  }
+
+  .token.function {
+    color: #8250df;
+  }
+
+  .token.string,
+  .token.char {
+    color: #0a3069;
+  }
+
+  .token.number,
+  .token.boolean,
+  .token.constant {
+    color: #6639ba;
+  }
+
+  .token.comment {
+    color: #6e7781;
+  }
+
+  .token.class-name,
+  .token.builtin {
+    color: #953800;
+  }
+
+  .token.property,
+  .token.attr-name,
+  .token.tag {
+    color: #116329;
+  }
+
+  pre[class*="language-"] {
+    background: #f6f8fa;
+  }
+}

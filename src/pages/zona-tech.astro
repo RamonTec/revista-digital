@@ -1,0 +1,14 @@
+---
+import RevistaLayout from '../layouts/RevistaLayout.astro';
+import NavPaginas from '../components/NavPaginas.astro';
+import ZonaTech from '../sections/ZonaTech.astro';
+---
+
+<RevistaLayout
+  titulo="Zona Tech"
+  seccionActiva="zona-tech"
+  descripcion="Panorama de tendencias y novedades del mundo tecnológico"
+>
+  <ZonaTech />
+  <NavPaginas actual="zona-tech" />
+</RevistaLayout>

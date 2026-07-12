@@ -1,0 +1,63 @@
+---
+// ============================================================
+// Figure.astro — Figura con caption y imagen responsiva
+// ============================================================
+
+export interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  numero?: string;
+  width?: string;
+}
+
+const { src, alt, caption = '', numero = '', width = '' } = Astro.props;
+---
+
+<figure class="figure" data-reveal style={width ? `max-width: ${width}` : ''}>
+  <div class="figure__img-wrap">
+    <img src={src} alt={alt} loading="lazy" class="figure__img" />
+  </div>
+  {(caption || numero) && (
+    <figcaption class="figure__caption texto-dim">
+      {numero && <span class="figure__num mono texto-acento">{numero}</span>}
+      {caption}
+    </figcaption>
+  )}
+</figure>
+
+<style>
+  .figure {
+    margin: var(--sp-6) 0;
+  }
+
+  .figure__img-wrap {
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    background: var(--c-bg-secundario);
+  }
+
+  .figure__img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .figure__caption {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-3);
+    margin-top: var(--sp-3);
+    font-size: var(--fs-sm);
+    font-style: italic;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .figure__num {
+    font-size: var(--fs-xs);
+    font-style: normal;
+    font-weight: var(--fw-semibold);
+  }
+</style>

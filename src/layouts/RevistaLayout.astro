@@ -1,0 +1,80 @@
+---
+// ============================================================
+// RevistaLayout.astro — Layout base de la revista
+// Incluye: head, fuentes, estilos, Nav, ProgressBar, scripts
+// ============================================================
+
+import { ClientRouter } from 'astro:transitions';
+import Nav from '../components/Nav.astro';
+import ProgressBar from '../components/ProgressBar.astro';
+import { revista } from '../data/secciones';
+
+// Estilos globales (Astro los procesa y bundlea)
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/animations.css';
+import '../styles/responsive.css';
+import '../styles/prism-theme.css';
+
+const {
+  titulo,
+  seccionActiva = '',
+  descripcion = '',
+} = Astro.props as {
+  titulo: string;
+  seccionActiva?: string;
+  descripcion?: string;
+};
+
+const tituloCompleto = `${titulo} — ${revista.nombre}`;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descripcion || revista.lema} />
+    <meta name="theme-color" content="#0f1419" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descripcion || revista.lema} />
+    <meta property="og:type" content="article" />
+
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- View Transitions API: navegación con animación entre páginas -->
+    <ClientRouter />
+  </head>
+
+  <body>
+    <ProgressBar />
+    <Nav activa={seccionActiva} />
+
+    <div class="revista-grid">
+      <main class="contenido-revista main-content" id="contenido" transition:name="contenido">
+        <slot />
+      </main>
+    </div>
+
+    <!-- Scripts globales -->
+    <script>
+      import '../scripts/scroll-reveal';
+      import '../scripts/progress';
+      import '../scripts/page-transitions';
+    </script>
+  </body>
+</html>

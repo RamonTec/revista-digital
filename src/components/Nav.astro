@@ -1,0 +1,291 @@
+---
+// ============================================================
+// Nav.astro — Navegación lateral fija responsive
+// Menú hamburguesa en móvil, sidebar fija en desktop
+// ============================================================
+
+import { secciones, revista } from '../data/secciones';
+
+const { activa = '' } = Astro.props as { activa?: string };
+
+const categorias = [
+  { id: 'apertura', label: 'Apertura' },
+  { id: 'teoria', label: 'Teoría' },
+  { id: 'practica', label: 'Caso Práctico' },
+  { id: 'cierre', label: 'Cierre' },
+] as const;
+---
+
+<aside class="nav-lateral" id="nav-lateral" aria-label="Navegación de la revista">
+  <div class="nav-header">
+    <a href="/" class="nav-logo">
+      <span class="nav-logo__marca texto-acento">BDD</span>
+      <span class="nav-logo__sub texto-dim">{revista.edicion}</span>
+    </a>
+    <button
+      class="nav-close"
+      id="nav-close"
+      aria-label="Cerrar navegación"
+      type="button"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+  </div>
+
+  <nav class="nav-contenido">
+    {categorias.map((cat) => (
+      <div class="nav-categoria">
+        <span class="nav-categoria__label">{cat.label}</span>
+        <ul>
+          {secciones
+            .filter((s) => s.categoria === cat.id)
+            .map((s) => (
+              <li>
+                <a
+                  href={s.href}
+                  class:list={['nav-enlace', { activa: s.slug === activa }]}
+                  aria-current={s.slug === activa ? 'page' : undefined}
+                >
+                  <span class="nav-enlace__num texto-dim mono">{s.numero}</span>
+                  <span class="nav-enlace__titulo">{s.titulo}</span>
+                </a>
+              </li>
+            ))}
+        </ul>
+      </div>
+    ))}
+  </nav>
+
+  <div class="nav-footer texto-dim">
+    <p class="nav-footer__lema">{revista.lema}</p>
+    <p class="nav-footer__fecha">{revista.fecha}</p>
+  </div>
+</aside>
+
+<button
+  class="nav-toggle"
+  id="nav-toggle"
+  aria-label="Abrir navegación"
+  aria-controls="nav-lateral"
+  aria-expanded="false"
+  type="button"
+>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <line x1="3" y1="6" x2="21" y2="6" />
+    <line x1="3" y1="12" x2="21" y2="12" />
+    <line x1="3" y1="18" x2="21" y2="18" />
+  </svg>
+  <span>Índice</span>
+</button>
+
+<div class="nav-overlay" id="nav-overlay"></div>
+
+<style>
+  .nav-lateral {
+    display: flex;
+    flex-direction: column;
+    background: var(--c-bg-secundario);
+  }
+
+  .nav-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--sp-5) var(--sp-5) var(--sp-4);
+    border-bottom: 1px solid var(--c-borde);
+  }
+
+  .nav-logo {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+  }
+
+  .nav-logo__marca {
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    font-weight: var(--fw-black);
+    letter-spacing: -0.03em;
+  }
+
+  .nav-logo__sub {
+    font-size: var(--fs-xs);
+    font-family: var(--font-mono);
+  }
+
+  .nav-close {
+    display: none;
+    color: var(--c-texto-dim);
+    padding: var(--sp-2);
+    border-radius: var(--r-sm);
+  }
+
+  .nav-close:hover {
+    color: var(--c-acento);
+  }
+
+  .nav-contenido {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--sp-4) var(--sp-3);
+  }
+
+  .nav-categoria {
+    margin-bottom: var(--sp-4);
+  }
+
+  .nav-categoria__label {
+    display: block;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+    color: var(--c-texto-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: var(--sp-2) var(--sp-3);
+    margin-bottom: var(--sp-1);
+  }
+
+  .nav-contenido ul {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .nav-enlace {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-3);
+    padding: var(--sp-2) var(--sp-3);
+    border-radius: var(--r-sm);
+    color: var(--c-texto-dim);
+    transition: all var(--t-fast);
+  }
+
+  .nav-enlace:hover {
+    color: var(--c-texto);
+    background: var(--c-bg-terciario);
+  }
+
+  .nav-enlace.activo {
+    color: var(--c-acento);
+    background: rgba(0, 217, 163, 0.08);
+    font-weight: var(--fw-medium);
+  }
+
+  .nav-enlace__num {
+    font-size: var(--fs-xs);
+    min-width: 24px;
+  }
+
+  .nav-enlace__titulo {
+    font-size: var(--fs-sm);
+    line-height: 1.4;
+  }
+
+  .nav-footer {
+    padding: var(--sp-4) var(--sp-5);
+    border-top: 1px solid var(--c-borde);
+    font-size: var(--fs-xs);
+  }
+
+  .nav-footer__lema {
+    font-style: italic;
+    margin-bottom: var(--sp-1);
+  }
+
+  /* === Toggle móvil === */
+  .nav-toggle {
+    position: fixed;
+    bottom: var(--sp-4);
+    right: var(--sp-4);
+    z-index: var(--z-nav);
+    display: none;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--c-acento);
+    color: var(--c-bg-primario);
+    border-radius: var(--r-full);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-sm);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .nav-toggle:hover {
+    background: var(--c-acento-hover);
+  }
+
+  .nav-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: calc(var(--z-nav) - 1);
+    opacity: 0;
+    transition: opacity var(--t-normal);
+    pointer-events: none;
+  }
+
+  .nav-overlay.visible {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  @media (max-width: 1023px) {
+    .nav-close {
+      display: flex;
+    }
+
+    .nav-toggle {
+      display: flex;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .nav-contenido {
+      padding: var(--sp-4) var(--sp-4);
+    }
+  }
+</style>
+
+<script>
+  const navLateral = document.getElementById('nav-lateral');
+  const navToggle = document.getElementById('nav-toggle');
+  const navClose = document.getElementById('nav-close');
+  const navOverlay = document.getElementById('nav-overlay');
+
+  function abrirNav() {
+    navLateral?.classList.add('abierta');
+    navOverlay?.classList.add('visible');
+    navToggle?.setAttribute('aria-expanded', 'true');
+  }
+
+  function cerrarNav() {
+    navLateral?.classList.remove('abierta');
+    navOverlay?.classList.remove('visible');
+    navToggle?.setAttribute('aria-expanded', 'false');
+  }
+
+  function initNav() {
+    navToggle?.addEventListener('click', abrirNav);
+    navClose?.addEventListener('click', cerrarNav);
+    navOverlay?.addEventListener('click', cerrarNav);
+
+    navLateral?.querySelectorAll('a').forEach((enlace) => {
+      enlace.addEventListener('click', cerrarNav);
+    });
+  }
+
+  initNav();
+
+  // Re-aplicar listeners tras cada transición de View Transitions
+  document.addEventListener('astro:page-load', initNav);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') cerrarNav();
+  });
+</script>

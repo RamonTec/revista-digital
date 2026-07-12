@@ -1,0 +1,14 @@
+---
+// ============================================================
+// flipbook.astro — Página del flipbook (single-page)
+// Solo accesible con JavaScript. Redirigida desde index.astro
+// ============================================================
+
+import FlipLayout from '../layouts/FlipLayout.astro';
+import Flipbook from '../components/Flipbook.astro';
+import { revista } from '../data/secciones';
+---
+
+<FlipLayout titulo={`${revista.nombre} — ${revista.edicion}`} descripcion={revista.lema}>
+  <Flipbook />
+</FlipLayout>

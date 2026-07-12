@@ -1,0 +1,249 @@
+---
+// espacimiento-mental.astro — Bienestar del desarrollador
+import SectionHeader from '../components/SectionHeader.astro';
+import Callout from '../components/Callout.astro';
+---
+
+<div class="hoja-contenido">
+<SectionHeader
+    numero="10"
+    titulo="Espacimiento Mental"
+    descripcion="Pausa, reflexión y bienestar. El software lo hacen personas."
+    categoria="cierre"
+  />
+
+  <!-- === Intro === -->
+  <section data-reveal>
+    <div class="espacio-quote">
+      <blockquote>
+        <p>
+          «Programar no es solo escribir código que funciona. Es pensar,
+          decidir, comunicar y, sobre todo, <em>descansar</em>. Las
+          mejores soluciones rara vez llegan frente a la pantalla.»
+        </p>
+      </blockquote>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- === Fatiga de decisión === -->
+  <section data-reveal>
+    <h2>La fatiga de decisión en el desarrollo</h2>
+
+    <p>
+      Un desarrollador toma cientos de decisiones al día: nombres de
+      variables, estructura de tablas, dónde poner un índice, qué
+      refactor priorizar. Cada decisión consume energía mental, y esa
+      energía es <strong>finita</strong>.
+    </p>
+
+    <p>
+      La <em>fatiga de decisión</em> explica por qué al final del día
+      elegimos la solución más rápida (no la mejor) o postergamos
+      decisiones importantes. Reconocerla es el primer paso para
+      gestionarla.
+    </p>
+
+    <Callout tipo="info" titulo="Estrategias prácticas">
+      <p>
+        <strong>1.</strong> Automatizar decisiones triviales (linters,
+        formatters, convenciones de equipo).
+        <strong>2.</strong> Hacer las decisiones difíciles por la mañana,
+        cuando la energía está al máximo.
+        <strong>3.</strong> Dormir sobre los problemas complejos: el
+        cerebro sigue procesando en reposo.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Técnica Pomodoro === -->
+  <section data-reveal>
+    <h2>Técnica Pomodoro para sesión de código profundo</h2>
+
+    <div class="pomodoro-grid grid-2-col">
+      <div class="pomodoro-card tarjeta">
+        <h3 class="texto-acento">Estructura</h3>
+        <ul class="pomodoro-list">
+          <li><strong>25 min</strong> — concentración profunda, sin interrupciones</li>
+          <li><strong>5 min</strong> — pausa corta: levantarse, mirar lejos, beber agua</li>
+          <li>Repetir 4 veces</li>
+          <li><strong>15–30 min</strong> — pausa larga después de 4 ciclos</li>
+        </ul>
+      </div>
+      <div class="pomodoro-card tarjeta">
+        <h3 class="texto-acento">Beneficios</h3>
+        <ul class="pomodoro-list">
+          <li>Reduce la procrastinación (empezar es lo difícil)</li>
+          <li>Mantiene la concentración sostenida sin agotamiento</li>
+          <li>Crea ritmo y hábito de trabajo enfocado</li>
+          <li>Previene la fatiga visual y postural</li>
+        </ul>
+      </div>
+    </div>
+
+    <Callout tipo="warn" titulo="Adaptación personal">
+      <p>
+        25 minutos no es ley. Algunas personas rinden mejor con bloques
+        de 50 o 90 minutos (técnica <em>Deep Work</em> de Cal Newport).
+        Lo importante es alternar concentración profunda con descansos
+        reales —no «descansos» mirando Twitter.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Salud física === -->
+  <section data-reveal>
+    <h2>Cuerpo y mente: no son separables</h2>
+
+    <p>
+      El trabajo intelectual se apoya en el cuerpo. La postura, el
+      movimiento, la hidratación y el sueño impactan directamente en la
+      calidad del código que escribimos.
+    </p>
+
+    <div class="grid-3-col">
+      <div class="salud-card tarjeta">
+        <span class="salud-card__icono texto-acento">👁</span>
+        <h3>Regla 20-20-20</h3>
+        <p>Cada 20 minutos, mira algo a 20 pies (6m) durante 20 segundos. Reduce la fatiga visual.</p>
+      </div>
+      <div class="salud-card tarjeta">
+        <span class="salud-card__icono texto-acento">🧍</span>
+        <h3>Moverse cada hora</h3>
+        <p>Levantarse, estirar, caminar 2 minutos. Prevenir el síndrome de «cuerpo de desarrollador».</p>
+      </div>
+      <div class="salud-card tarjeta">
+        <span class="salud-card__icono texto-acento">💧</span>
+        <h3>Hidratación</h3>
+        <p>El cerebro es 73% agua. Una deshidratación leve reduce concentración y memoria.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- === Reflexión final === -->
+  <section data-reveal>
+    <h2>Una pausa antes de cerrar</h2>
+
+    <p>
+      Has recorrido 10 secciones de teoría y práctica. Antes de pasar a
+      la contraportada, tómate un momento. Respira. Cierra el editor.
+      Pregúntate:
+    </p>
+
+    <div class="reflexion-list">
+      <p class="reflexion-item">¿Qué concepto de esta edición vas a aplicar en tu próximo proyecto?</p>
+      <p class="reflexion-item">¿Qué sección te quedó dando vueltas y merece una relectura?</p>
+      <p class="reflexion-item">¿Qué pregunta nueva te surgió que esta edición no respondió?</p>
+    </div>
+
+    <Callout tipo="success" titulo="La revista termina, el aprendizaje no">
+      <p>
+        Guarda estos apuntes, vuelve a los diagramas, compártelos con tu
+        equipo. El conocimiento que se enseña se duplica; el que se
+        aplica se multiplica.
+      </p>
+    </Callout>
+  </section>
+
+  
+</div>
+
+<style>
+  h2 {
+    font-size: var(--fs-2xl);
+    margin-bottom: var(--sp-4);
+  }
+
+  h3 {
+    font-size: var(--fs-lg);
+    margin: 0 0 var(--sp-3) 0;
+  }
+
+  p {
+    font-size: var(--fs-md);
+    line-height: var(--lh-relaxed);
+    margin-bottom: var(--sp-4);
+  }
+
+  .espacio-quote blockquote {
+    font-size: var(--fs-xl);
+    line-height: var(--lh-relaxed);
+    padding: var(--sp-6);
+    text-align: center;
+    border-left: none;
+    border-top: 2px solid var(--c-acento);
+    border-bottom: 2px solid var(--c-acento);
+    border-radius: 0;
+    margin: var(--sp-6) 0;
+  }
+
+  .espacio-quote blockquote p {
+    font-size: inherit;
+    margin: 0;
+  }
+
+  .pomodoro-card,
+  .salud-card {
+    padding: var(--sp-5);
+    background: var(--c-bg-secundario);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+  }
+
+  .pomodoro-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  .pomodoro-list li {
+    font-size: var(--fs-sm);
+    padding-left: var(--sp-4);
+    position: relative;
+  }
+
+  .pomodoro-list li::before {
+    content: '▸';
+    position: absolute;
+    left: var(--sp-1);
+    color: var(--c-acento);
+  }
+
+  .salud-card {
+    text-align: center;
+  }
+
+  .salud-card__icono {
+    display: block;
+    font-size: var(--fs-2xl);
+    margin-bottom: var(--sp-2);
+  }
+
+  .salud-card p {
+    font-size: var(--fs-sm);
+    margin: 0;
+  }
+
+  .reflexion-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    margin: var(--sp-5) 0;
+  }
+
+  .reflexion-item {
+    padding: var(--sp-4) var(--sp-5);
+    background: var(--c-bg-secundario);
+    border-left: 3px solid var(--c-acento-alt);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+    font-style: italic;
+    margin: 0;
+  }
+</style>

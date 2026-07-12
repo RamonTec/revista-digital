@@ -1,0 +1,323 @@
+---
+// contraportada.astro — Créditos, referencias y cierre
+import SectionHeader from '../components/SectionHeader.astro';
+import { revista, secciones } from '../data/secciones';
+---
+
+<div class="hoja-contenido">
+<SectionHeader
+    numero="11"
+    titulo="Contraportada"
+    descripcion="Créditos, referencias bibliográficas y cierre de la edición"
+    categoria="cierre"
+  />
+
+  <!-- === Créditos === -->
+  <section data-reveal>
+    <h2>Créditos</h2>
+
+    <div class="creditos-grid grid-2-col">
+      <div class="credito-card tarjeta">
+        <h3 class="texto-acento">Edición</h3>
+        <p class="credito-nombre">Equipo Editorial BDD Revista</p>
+        <p class="texto-dim">Dirección, redacción y revisión técnica</p>
+      </div>
+      <div class="credito-card tarjeta">
+        <h3 class="texto-acento">Diseño y maquetación</h3>
+        <p class="credito-nombre">Sistema de diseño editorial digital</p>
+        <p class="texto-dim">Astro + Mermaid + Prism.js</p>
+      </div>
+      <div class="credito-card tarjeta">
+        <h3 class="texto-acento">Revisión técnica</h3>
+        <p class="credito-nombre">Comité de revisión BDD</p>
+        <p class="texto-dim">Validación de conceptos y código SQL</p>
+      </div>
+      <div class="credito-card tarjeta">
+        <h3 class="texto-acento">Fecha de publicación</h3>
+        <p class="credito-nombre">{revista.fecha}</p>
+        <p class="texto-dim">{revista.issn}</p>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- === Referencias === -->
+  <section data-reveal>
+    <h2>Referencias bibliográficas</h2>
+
+    <ol class="referencias-list">
+      <li>
+        <strong>North, D.</strong> (2006). <em>Introducing BDD</em>.
+        Better Software Magazine.
+      </li>
+      <li>
+        <strong>Codd, E. F.</strong> (1970). <em>A Relational Model of
+        Data for Large Shared Data Banks</em>. Communications of the ACM.
+      </li>
+      <li>
+        <strong>Cockburn, A.</strong> (2005). <em>Hexagonal
+        Architecture</em>. Alistair Cockburn's blog.
+      </li>
+      <li>
+        <strong>Chen, P. P.</strong> (1976). <em>The Entity-Relationship
+        Model—Toward a Unified View of Data</em>. ACM Transactions on
+        Database Systems.
+      </li>
+      <li>
+        <strong>Martin, R. C.</strong> (2017). <em>Clean Architecture:
+        A Craftsman's Guide to Software Structure and Design</em>.
+        Prentice Hall.
+      </li>
+      <li>
+        <strong>Martin, R. C.</strong> (2008). <em>Clean Code: A
+        Handbook of Agile Software Craftsmanship</em>. Prentice Hall.
+      </li>
+      <li>
+        <strong>Hunt, A. & Thomas, D.</strong> (1999). <em>The Pragmatic
+        Programmer: From Journeyman to Master</em>. Addison-Wesley.
+      </li>
+      <li>
+        <strong>Newport, C.</strong> (2016). <em>Deep Work: Rules for
+        Focused Success in a Distracted World</em>. Grand Central
+        Publishing.
+      </li>
+      <li>
+        <strong>OWASP Foundation.</strong> (2021). <em>OWASP Top Ten
+        Security Risks</em>. https://owasp.org/Top10
+      </li>
+      <li>
+        <strong>PostgreSQL Global Development Group.</strong> (2024).
+        <em>PostgreSQL 16 Documentation</em>. https://www.postgresql.org/docs/
+      </li>
+    </ol>
+  </section>
+
+  <hr />
+
+  <!-- === Stack tecnológico === -->
+  <section data-reveal>
+    <h2>Stack tecnológico de esta revista</h2>
+
+    <div class="stack-grid grid-2-col">
+      <div class="stack-item">
+        <span class="stack-item__cat texto-dim">Framework</span>
+        <span class="stack-item__val">Astro 7 (SSG)</span>
+      </div>
+      <div class="stack-item">
+        <span class="stack-item__cat texto-dim">Diagramas</span>
+        <span class="stack-item__val">Mermaid.js 11</span>
+      </div>
+      <div class="stack-item">
+        <span class="stack-item__cat texto-dim">Highlight</span>
+        <span class="stack-item__val">Prism.js (tema SQL custom)</span>
+      </div>
+      <div class="stack-item">
+        <span class="stack-item__cat texto-dim">Animaciones</span>
+        <span class="stack-item__val">CSS + IntersectionObserver</span>
+      </div>
+      <div class="stack-item">
+        <span class="stack-item__cat texto-dim">Tipografía</span>
+        <span class="stack-item__val">Inter + JetBrains Mono</span>
+      </div>
+      <div class="stack-item">
+        <span class="stack-item__cat texto-dim">Build</span>
+        <span class="stack-item__val">pnpm + Node 22+</span>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- === Agradecimientos === -->
+  <section data-reveal>
+    <h2>Agradecimientos</h2>
+
+    <p>
+      A la comunidad open source que hace posible herramientas como
+      Astro, Mermaid, Prism y PostgreSQL. A los pioneros del BDD y el
+      modelado relacional que nos legaron principios que siguen vigentes
+      décadas después. Y a ti, lectora o lector, por llegar hasta aquí.
+    </p>
+  </section>
+
+  <hr />
+
+  <!-- === Próxima edición === -->
+  <section data-reveal>
+    <h2>Próxima edición</h2>
+
+    <div class="proxima-edicion tarjeta">
+      <h3 class="texto-acento">Edición Nº 2 — en preparación</h3>
+      <p>
+        Temas en desarrollo: optimización de queries y <code>EXPLAIN
+        ANALYZE</code>, particionamiento de tablas, replicación y alta
+        disponibilidad, y un caso práctico de migración de monolito a
+        microservicios con bases de datos distribuidas.
+      </p>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- === Cierre === -->
+  <section data-reveal class="cierre">
+    <p class="cierre__lema">{revista.lema}</p>
+    <p class="cierre__marca texto-acento">BDD Revista</p>
+    <p class="cierre__edicion texto-dim mono">{revista.edicion} — {revista.fecha}</p>
+
+    <a href="/" class="cierre__volver">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="18 15 12 9 6 15" />
+      </svg>
+      Volver a la portada
+    </a>
+  </section>
+
+  
+</div>
+
+<style>
+  h2 {
+    font-size: var(--fs-2xl);
+    margin-bottom: var(--sp-4);
+  }
+
+  h3 {
+    font-size: var(--fs-lg);
+    margin: 0 0 var(--sp-2) 0;
+  }
+
+  p {
+    font-size: var(--fs-md);
+    line-height: var(--lh-relaxed);
+    margin-bottom: var(--sp-4);
+  }
+
+  .credito-card {
+    padding: var(--sp-5);
+    background: var(--c-bg-secundario);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+  }
+
+  .credito-nombre {
+    font-weight: var(--fw-medium);
+    font-size: var(--fs-base);
+    margin-bottom: var(--sp-1);
+  }
+
+  .referencias-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    counter-reset: ref;
+    list-style: none;
+    padding: 0;
+  }
+
+  .referencias-list li {
+    counter-increment: ref;
+    padding: var(--sp-3) var(--sp-4) var(--sp-3) var(--sp-7);
+    position: relative;
+    font-size: var(--fs-sm);
+    line-height: var(--lh-normal);
+    border-bottom: 1px solid var(--c-borde);
+  }
+
+  .referencias-list li::before {
+    content: '[' counter(ref) ']';
+    position: absolute;
+    left: var(--sp-2);
+    color: var(--c-acento);
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+  }
+
+  .stack-grid {
+    gap: var(--sp-3);
+  }
+
+  .stack-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--c-bg-secundario);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-sm);
+  }
+
+  .stack-item__cat {
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .stack-item__val {
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    color: var(--c-acento);
+  }
+
+  .proxima-edicion {
+    padding: var(--sp-6);
+    background: var(--c-bg-secundario);
+    border: 1px solid var(--c-acento);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-glow);
+  }
+
+  .proxima-edicion p {
+    margin: 0;
+    font-size: var(--fs-sm);
+  }
+
+  .proxima-edicion code {
+    color: var(--c-sql);
+  }
+
+  .cierre {
+    text-align: center;
+    padding: var(--sp-8) 0;
+  }
+
+  .cierre__lema {
+    font-size: var(--fs-xl);
+    font-style: italic;
+    color: var(--c-texto-dim);
+    margin: 0 auto var(--sp-3);
+    max-width: 500px;
+  }
+
+  .cierre__marca {
+    font-size: var(--fs-3xl);
+    font-weight: var(--fw-black);
+    letter-spacing: -0.03em;
+    margin-bottom: var(--sp-1);
+  }
+
+  .cierre__edicion {
+    font-size: var(--fs-sm);
+    margin-bottom: var(--sp-6);
+  }
+
+  .cierre__volver {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-2) var(--sp-5);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-full);
+    font-size: var(--fs-sm);
+    color: var(--c-texto);
+    transition: all var(--t-normal);
+  }
+
+  .cierre__volver:hover {
+    border-color: var(--c-acento);
+    color: var(--c-acento);
+    background: var(--c-bg-secundario);
+  }
+</style>

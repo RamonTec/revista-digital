@@ -1,0 +1,14 @@
+---
+import RevistaLayout from '../layouts/RevistaLayout.astro';
+import NavPaginas from '../components/NavPaginas.astro';
+import FundamentosBDD from '../sections/FundamentosBDD.astro';
+---
+
+<RevistaLayout
+  titulo="Fundamentos BDD"
+  seccionActiva="fundamentos-bdd"
+  descripcion="Behavior-Driven Development desde cero: principios, ciclo y sintaxis Gherkin"
+>
+  <FundamentosBDD />
+  <NavPaginas actual="fundamentos-bdd" />
+</RevistaLayout>

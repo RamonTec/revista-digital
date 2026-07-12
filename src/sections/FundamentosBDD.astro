@@ -1,0 +1,278 @@
+---
+// fundamentos-bdd.astro — BDD desde cero con diagrama Mermaid
+import SectionHeader from '../components/SectionHeader.astro';
+import Mermaid from '../components/Mermaid.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+import Callout from '../components/Callout.astro';
+---
+
+<div class="hoja-contenido">
+<SectionHeader
+    numero="03"
+    titulo="Fundamentos BDD"
+    descripcion="Behavior-Driven Development: del comportamiento a la implementación"
+    categoria="teoria"
+  />
+
+  <!-- === Qué es BDD === -->
+  <section data-reveal>
+    <h2>¿Qué es Behavior-Driven Development?</h2>
+
+    <p>
+      <strong>BDD</strong> (Behavior-Driven Development) es una metodología
+      de desarrollo ágil que extiende TDD (Test-Driven Development) enfocándose
+      en el <em>comportamiento observable</em> del sistema desde la
+      perspectiva del negocio. Su objetivo es crear un lenguaje común entre
+      stakeholders, desarrolladores y QA.
+    </p>
+
+    <p>
+      Mientras TDD pregunta <em>«¿está el código correcto?»</em>, BDD pregunta
+      <em>«¿estamos construyendo lo correcto?»</em>. La diferencia es sutil
+      pero profunda: BDD empieza por la conversación, no por el código.
+    </p>
+
+    <Callout tipo="info" titulo="Origen">
+      <p>
+        BDD fue acuñado por <strong>Dan North</strong> en 2006 como respuesta
+        a las dificultades de adoptar TDD en entornos empresariales donde los
+        tests técnicos no comunicaban valor de negocio.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Ciclo BDD === -->
+  <section data-reveal>
+    <h2>El ciclo BDD</h2>
+
+    <p>
+      El flujo BDD es iterativo y colaborativo. Cada feature comienza con una
+      conversación que se materializa en ejemplos concretos, que luego se
+      automatizan como tests y guían la implementación.
+    </p>
+
+    <Mermaid
+      caption="Figura 3.1 — Ciclo iterativo del BDD: de la conversación al código"
+      diagram={`flowchart LR
+        A["💬 Conversación\n(Descubrimiento)"] --> B["📝 Ejemplos\n(Gherkin)"]
+        B --> C["⚙️ Automatización\n(Tests)"]
+        C --> D["🔨 Implementación\n(Código)"]
+        D --> E["✅ Validación\n(Documentación viva)"]
+        E --> A
+
+        style A fill:#1a2332,stroke:#00d9a3,color:#e6edf3
+        style B fill:#1a2332,stroke:#4d9eff,color:#e6edf3
+        style C fill:#1a2332,stroke:#00d9a3,color:#e6edf3
+        style D fill:#1a2332,stroke:#4d9eff,color:#e6edf3
+        style E fill:#1a2332,stroke:#00d9a3,color:#e6edf3`}
+    />
+  </section>
+
+  <hr />
+
+  <!-- === Las tres fases === -->
+  <section data-reveal>
+    <h2>Las tres fases de BDD</h2>
+
+    <div class="grid-2-col">
+      <div class="fase-card tarjeta">
+        <h3 class="texto-acento">1. Descubrimiento</h3>
+        <p>
+          Reunión entre negocio, desarrollo y QA (técnica «Three Amigos»).
+          Se exploran escenarios mediante ejemplos concretos antes de
+          escribir una sola línea de código.
+        </p>
+      </div>
+
+      <div class="fase-card tarjeta">
+        <h3 class="texto-acento">2. Formulación</h3>
+        <p>
+          Los ejemplos se estructuran en <strong>Gherkin</strong>, un
+          lenguaje estructurado con sintaxis <em>Given-When-Then</em> que
+          sirve como especificación ejecutable.
+        </p>
+      </div>
+
+      <div class="fase-card tarjeta">
+        <h3 class="texto-acento">3. Automatización</h3>
+        <p>
+          Las especificaciones se conectan al código mediante
+          <em>step definitions</em>. El test falla (rojo), se implementa
+          (verde) y se refactorea, igual que TDD.
+        </p>
+      </div>
+
+      <div class="fase-card tarjeta">
+        <h3 class="texto-acento">Documento vivo</h3>
+        <p>
+          Los tests BDD generan documentación que <strong>nunca queda
+          obsoleta</strong>: si el comportamiento cambia, el test cambia
+          o falla. La especificación es el test.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- === Sintaxis Gherkin === -->
+  <section data-reveal>
+    <h2>Sintaxis Gherkin: Given-When-Then</h2>
+
+    <p>
+      <strong>Gherkin</strong> es el lenguaje estructurado para escribir
+      escenarios BDD. Su estructura es simple y legible por cualquier
+      persona del equipo, sin conocimientos técnicos.
+    </p>
+
+    <CodeBlock
+      language="bash"
+      filename="ejemplo_login.feature"
+      code={`# Archivo: login.feature
+# Feature: describe una funcionalidad de valor para el negocio
+
+Feature: Autenticación de usuarios
+  Como usuario registrado
+  Quiero iniciar sesión con mis credenciales
+  Para acceder a mi panel personal
+
+  # Scenario: un caso concreto con pasos Given-When-Then
+
+  Scenario: Login exitoso con credenciales válidas
+    Given un usuario registrado con email "ana@dev.com"
+    And el usuario tiene contraseña "Secure123!"
+    When intenta iniciar sesión con esas credenciales
+    Then debe ser redirigido al panel personal
+    And debe ver el mensaje "Bienvenida, Ana"
+
+  Scenario: Login fallido con contraseña incorrecta
+    Given un usuario registrado con email "ana@dev.com"
+    When intenta iniciar sesión con contraseña "Incorrecta456"
+    Then debe ver el error "Credenciales inválidas"
+    And no debe ser redirigido`}
+    />
+
+    <Callout tipo="info" titulo="Palabras clave de Gherkin">
+      <p>
+        <strong>Feature</strong>: describe la funcionalidad.
+        <strong>Scenario</strong>: un caso concreto.
+        <strong>Given</strong>: precondición (estado inicial).
+        <strong>When</strong>: acción (evento que dispara el comportamiento).
+        <strong>Then</strong>: resultado esperado (postcondición).
+        <strong>And / But</strong>: conectores para pasos adicionales.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === BDD vs TDD === -->
+  <section data-reveal>
+    <h2>BDD vs TDD: complementarios, no excluyentes</h2>
+
+    <Mermaid
+      caption="Figura 3.2 — Niveles de testing: BDD en la cima, TDD en la base"
+      diagram={`flowchart TB
+        subgraph BDD ["BDD — Nivel de comportamiento"]
+          B1["Feature: Login"]
+          B2["Scenario: Login exitoso"]
+          B3["Scenario: Login fallido"]
+        end
+
+        subgraph TDD ["TDD — Nivel de unidad"]
+          T1["test: validarEmail()"]
+          T2["test: hashPassword()"]
+          T3["test: generarToken()"]
+        end
+
+        BDD --> TDD
+
+        style BDD fill:#0f1419,stroke:#00d9a3,color:#e6edf3
+        style TDD fill:#0f1419,stroke:#4d9eff,color:#e6edf3`}
+    />
+
+    <p>
+      BDD opera en el nivel de <strong>comportamiento de negocio</strong>
+      (acceptance tests), mientras que TDD opera en el nivel de
+      <strong>unidades de código</strong>. Un buen proyecto usa ambos:
+      BDD define <em>qué</em> construir, TDD asegura que el <em>cómo</em>
+      es correcto.
+    </p>
+  </section>
+
+  <hr />
+
+  <!-- === Conexión con BDD de datos === -->
+  <section data-reveal>
+    <h2>BDD aplicado a bases de datos</h2>
+
+    <p>
+      En el contexto de esta revista, aplicaremos BDD para especificar el
+      comportamiento del modelo de datos antes de diseñar las tablas. En
+      lugar de empezar por el ER, empezamos por escenarios:
+    </p>
+
+    <CodeBlock
+      language="bash"
+      filename="gestion_libros.feature"
+      code={`Feature: Gestión de préstamos de libros
+  Como bibliotecario
+  Quiero registrar préstamos y devoluciones
+  Para controlar el inventario de la biblioteca
+
+  Scenario: Registrar un préstamo válido
+    Given un libro con ISBN "978-3-16-148410-0" disponible
+    And un socio con ID "S-042" activo
+    When registro un préstamo del libro al socio
+    Then el libro debe marcar su estado como "prestado"
+    And el préstamo debe tener fecha de devolución en 14 días
+
+  Scenario: No prestar un libro ya prestado
+    Given un libro con ISBN "978-3-16-148410-0" en estado "prestado"
+    When intento registrar un préstamo de ese libro
+    Then debe rechazarse con error "Libro no disponible"
+    And el estado del libro no debe cambiar`}
+    />
+
+    <Callout tipo="success" titulo="En la siguiente sección">
+      <p>
+        Veremos cómo estos escenarios BDD se traducen en un modelo
+        entidad-relación y una arquitectura de datos que los soporta.
+      </p>
+    </Callout>
+  </section>
+
+  
+</div>
+
+<style>
+  h2 {
+    font-size: var(--fs-2xl);
+    margin-bottom: var(--sp-4);
+  }
+
+  p {
+    font-size: var(--fs-md);
+    line-height: var(--lh-relaxed);
+    margin-bottom: var(--sp-4);
+  }
+
+  .fase-card {
+    padding: var(--sp-5);
+    background: var(--c-bg-secundario);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+  }
+
+  .fase-card h3 {
+    font-size: var(--fs-lg);
+    margin-bottom: var(--sp-2);
+  }
+
+  .fase-card p {
+    font-size: var(--fs-sm);
+    margin-bottom: 0;
+  }
+</style>

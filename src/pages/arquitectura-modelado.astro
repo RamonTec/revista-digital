@@ -1,0 +1,14 @@
+---
+import RevistaLayout from '../layouts/RevistaLayout.astro';
+import NavPaginas from '../components/NavPaginas.astro';
+import ArquitecturaModelado from '../sections/ArquitecturaModelado.astro';
+---
+
+<RevistaLayout
+  titulo="Arquitectura y Modelado"
+  seccionActiva="arquitectura-modelado"
+  descripcion="Principios de arquitectura de software y modelado de datos relacionales"
+>
+  <ArquitecturaModelado />
+  <NavPaginas actual="arquitectura-modelado" />
+</RevistaLayout>

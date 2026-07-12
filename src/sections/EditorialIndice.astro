@@ -1,0 +1,268 @@
+---
+// editorial-indice.astro — Editorial + índice navegable
+import SectionHeader from '../components/SectionHeader.astro';
+import { secciones, revista } from '../data/secciones';
+const categorias = [
+  { id: 'apertura', label: 'Apertura', icono: '◈' },
+  { id: 'teoria', label: 'Teoría', icono: '◆' },
+  { id: 'practica', label: 'Caso Práctico', icono: '▶' },
+  { id: 'cierre', label: 'Cierre', icono: '◉' },
+] as const;
+---
+
+<div class="hoja-contenido">
+<SectionHeader
+    numero="01"
+    titulo="Editorial"
+    descripcion="Bienvenida a la primera edición de BDD Revista Digital"
+    categoria="apertura"
+  />
+
+  <!-- === Editorial === -->
+  <article class="editorial">
+    <div data-reveal>
+      <p>
+        Bienvenido a la primera edición de <strong>{revista.nombre}</strong>,
+        una publicación digital pensada para desarrolladores, arquitectos de
+        software y estudiantes que buscan profundizar en el mundo de las
+        <strong>bases de datos</strong> y el <strong>desarrollo dirigido
+        por comportamiento</strong> (BDD).
+      </p>
+    </div>
+
+    <div data-reveal data-reveal-delay="1">
+      <p>
+        Esta revista nace de una convicción simple: el software de calidad
+        comienza por entender el <em>comportamiento</em> antes que la
+        implementación, y el <em>dato</em> bien modelado es el cimiento
+        sobre el que todo sistema robusto se sostiene.
+      </p>
+    </div>
+
+    <div data-reveal data-reveal-delay="2">
+      <p>
+        En esta edición recorreremos un camino completo: desde los
+        fundamentos teóricos del BDD y la arquitectura de datos, hasta un
+        <strong>caso práctico integral</strong> que cubre el modelado, la
+        normalización y la implementación en SQL. Cada sección incluye
+        diagramas, código y ejercicios pensados para la práctica.
+      </p>
+    </div>
+
+    <div data-reveal data-reveal-delay="3">
+      <blockquote>
+        <p>
+          «El modelo no es la realidad, pero un buen modelo hace que la
+          realidad sea comprensible y manipulable.»
+        </p>
+      </blockquote>
+    </div>
+
+    <div data-reveal data-reveal-delay="4">
+      <p>
+        Te invitamos a leer la revista en orden —cada sección construye
+        sobre la anterior—, pero también a saltar libremente usando el
+        índice navegable o la barra lateral. El contenido está diseñado
+        para consultarse, marcarse y volver.
+      </p>
+    </div>
+
+    <div data-reveal data-reveal-delay="5">
+      <p>
+        Que disfrutes la lectura tanto como nosotros disfrutamos
+        construyéndola.
+      </p>
+      <p class="editorial__firma texto-dim">
+        — Equipo Editorial, {revista.fecha}
+      </p>
+    </div>
+  </article>
+
+  <hr />
+
+  <!-- === Índice navegable === -->
+  <section class="indice">
+    <h2 class="indice__titulo" data-reveal>Índice de la edición</h2>
+
+    {categorias.map((cat, catIdx) => (
+      <div class="indice-categoria" data-reveal data-reveal-delay={String(catIdx + 1)}>
+        <h3 class="indice-categoria__label">
+          <span class="indice-categoria__icono">{cat.icono}</span>
+          {cat.label}
+        </h3>
+
+        <ol class="indice-lista">
+          {secciones
+            .filter((s) => s.categoria === cat.id)
+            .map((s) => (
+              <li class="indice-item">
+                <a href={s.href} class="indice-item__enlace" data-page-num={s.pageNum}>
+                  <span class="indice-item__num mono texto-acento">{s.numero}</span>
+                  <div class="indice-item__info">
+                    <span class="indice-item__titulo">{s.titulo}</span>
+                    <span class="indice-item__desc texto-dim">{s.descripcion}</span>
+                  </div>
+                  <svg
+                    class="indice-item__flecha"
+                    width="18" height="18"
+                    viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </a>
+              </li>
+            ))}
+        </ol>
+      </div>
+    ))}
+  </section>
+
+   
+</div>
+
+<script>
+  // === Intercepta clicks del índice si estamos en el flipbook ===
+  // En modo flipbook: salta a la hoja con pageFlip.flip(pageNum)
+  // En modo estático: navegación normal (el enlace hace su trabajo)
+  function initIndiceFlipbookLinks() {
+    const enlaces = document.querySelectorAll('.indice-item__enlace[data-page-num]');
+    if (!enlaces.length) return;
+
+    enlaces.forEach((enlace) => {
+      enlace.addEventListener('click', (e) => {
+        // Solo interceptar si estamos en el flipbook
+        const pageFlip = (window as any).__pageFlip;
+        if (!pageFlip) return; // modo estático: navegación normal
+
+        const pageNum = parseInt(
+          (enlace as HTMLElement).dataset.pageNum || '0',
+          10
+        );
+
+        e.preventDefault();
+        pageFlip.flip(pageNum, 'top');
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initIndiceFlipbookLinks);
+  } else {
+    initIndiceFlipbookLinks();
+  }
+
+  // Re-init tras cambios de hoja en el flipbook
+  document.addEventListener('astro:page-load', initIndiceFlipbookLinks);
+</script>
+
+<style>
+  .editorial {
+    max-width: var(--content-max);
+  }
+
+  .editorial p {
+    font-size: var(--fs-md);
+    line-height: var(--lh-relaxed);
+    margin-bottom: var(--sp-4);
+  }
+
+  .editorial__firma {
+    margin-top: var(--sp-5);
+    font-style: italic;
+  }
+
+  /* === Índice === */
+  .indice {
+    margin-top: var(--sp-7);
+  }
+
+  .indice__titulo {
+    font-size: var(--fs-2xl);
+    margin-bottom: var(--sp-6);
+  }
+
+  .indice-categoria {
+    margin-bottom: var(--sp-6);
+  }
+
+  .indice-categoria__label {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-size: var(--fs-lg);
+    color: var(--c-acento-alt);
+    margin-bottom: var(--sp-3);
+    padding-bottom: var(--sp-2);
+    border-bottom: 1px solid var(--c-borde);
+  }
+
+  .indice-categoria__icono {
+    color: var(--c-acento);
+    font-size: var(--fs-md);
+  }
+
+  .indice-lista {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  .indice-item__enlace {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+    padding: var(--sp-3) var(--sp-4);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+    text-decoration: none;
+    color: var(--c-texto);
+    transition: all var(--t-fast);
+  }
+
+  .indice-item__enlace:hover {
+    border-color: var(--c-acento);
+    background: var(--c-bg-secundario);
+    transform: translateX(4px);
+  }
+
+  .indice-item__num {
+    font-size: var(--fs-md);
+    font-weight: var(--fw-bold);
+    min-width: 36px;
+    text-align: center;
+  }
+
+  .indice-item__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .indice-item__titulo {
+    font-weight: var(--fw-medium);
+    font-size: var(--fs-base);
+  }
+
+  .indice-item__desc {
+    font-size: var(--fs-sm);
+  }
+
+  .indice-item__flecha {
+    color: var(--c-texto-muted);
+    transition: transform var(--t-fast);
+    flex-shrink: 0;
+  }
+
+  .indice-item__enlace:hover .indice-item__flecha {
+    transform: translateX(4px);
+    color: var(--c-acento);
+  }
+
+  @media (max-width: 639px) {
+    .indice-item__desc {
+      display: none;
+    }
+  }
+</style>

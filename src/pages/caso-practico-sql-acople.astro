@@ -1,0 +1,14 @@
+---
+import RevistaLayout from '../layouts/RevistaLayout.astro';
+import NavPaginas from '../components/NavPaginas.astro';
+import CasoSQLAcople from '../sections/CasoSQLAcople.astro';
+---
+
+<RevistaLayout
+  titulo="Caso Práctico: SQL y Acople"
+  seccionActiva="caso-practico-sql-acople"
+  descripcion="Implementación del esquema en SQL e integración con la aplicación"
+>
+  <CasoSQLAcople />
+  <NavPaginas actual="caso-practico-sql-acople" />
+</RevistaLayout>

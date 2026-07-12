@@ -1,0 +1,425 @@
+---
+// caso-practico-sql-acople.astro — Implementación SQL + integración
+import SectionHeader from '../components/SectionHeader.astro';
+import Mermaid from '../components/Mermaid.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+import Callout from '../components/Callout.astro';
+---
+
+<div class="hoja-contenido">
+<SectionHeader
+    numero="09"
+    titulo="Caso Práctico: SQL y Acople"
+    descripcion="Implementación del esquema en SQL y patrón de integración con la aplicación"
+    categoria="practica"
+  />
+
+  <!-- === Creación del esquema === -->
+  <section data-reveal>
+    <h2>Creación del esquema SQL completo</h2>
+
+    <p>
+      Traducimos el modelo 3NF a sentencias <code>CREATE TABLE</code> en
+      PostgreSQL con todas las constraints: claves primarias, foráneas,
+      únicas, checks y valores por defecto.
+    </p>
+
+    <CodeBlock
+      language="sql"
+      filename="01_create_schema.sql"
+      code={`-- ============================================================
+-- Esquema: Biblioteca Aurora
+-- SGBD: PostgreSQL 16+
+-- Fecha: Julio 2026
+-- ============================================================
+
+-- === Tabla: socios ===
+CREATE TABLE socios (
+  id          SERIAL PRIMARY KEY,
+  nombre      VARCHAR(100) NOT NULL,
+  email       VARCHAR(255) NOT NULL UNIQUE,
+  telefono    VARCHAR(20),
+  estado      VARCHAR(15) NOT NULL DEFAULT 'activo'
+              CHECK (estado IN ('activo', 'suspendido')),
+  fecha_alta  DATE NOT NULL DEFAULT CURRENT_DATE
+);
+
+-- === Tabla: libros ===
+CREATE TABLE libros (
+  id                SERIAL PRIMARY KEY,
+  isbn              VARCHAR(17) NOT NULL UNIQUE,
+  titulo            VARCHAR(255) NOT NULL,
+  autor             VARCHAR(150) NOT NULL,
+  anio_publicacion  INT CHECK (anio_publicacion BETWEEN 1400 AND 2030),
+  genero            VARCHAR(50) NOT NULL
+);
+
+-- === Tabla: copias ===
+CREATE TABLE copias (
+  id                SERIAL PRIMARY KEY,
+  libro_id          INT NOT NULL REFERENCES libros(id) ON DELETE CASCADE,
+  estado            VARCHAR(15) NOT NULL DEFAULT 'disponible'
+                    CHECK (estado IN ('disponible', 'prestado', 'en_reparacion')),
+  fecha_adquisicion DATE NOT NULL DEFAULT CURRENT_DATE
+);
+
+-- === Tabla: prestamos ===
+CREATE TABLE prestamos (
+  id                     SERIAL PRIMARY KEY,
+  socio_id               INT NOT NULL REFERENCES socios(id),
+  copia_id               INT NOT NULL REFERENCES copias(id),
+  fecha_prestamo         DATE NOT NULL DEFAULT CURRENT_DATE,
+  fecha_devolucion       DATE NOT NULL,
+  fecha_real_devolucion  DATE,
+  estado                 VARCHAR(15) NOT NULL DEFAULT 'activo'
+                         CHECK (estado IN ('activo', 'devuelto', 'retrasado')),
+  -- La fecha de devolución debe ser posterior al préstamo
+  CONSTRAINT chk_fechas_devolucion
+    CHECK (fecha_devolucion > fecha_prestamo),
+  -- La fecha real de devolución no puede ser anterior al préstamo
+  CONSTRAINT chk_fecha_real
+    CHECK (fecha_real_devolucion IS NULL
+           OR fecha_real_devolucion >= fecha_prestamo)
+);`}
+    />
+  </section>
+
+  <hr />
+
+  <!-- === Índices === -->
+  <section data-reveal>
+    <h2>Índices para rendimiento</h2>
+
+    <p>
+      Los índices aceleran las consultas frecuentes. Los creamos sobre
+      columnas usadas en <code>WHERE</code>, <code>JOIN</code> y
+      <code>ORDER BY</code>. Ojo: cada índice ralentiza las escrituras,
+      así que se crean solo donde aportan valor.
+    </p>
+
+    <CodeBlock
+      language="sql"
+      filename="02_create_indexes.sql"
+      code={`-- Búsqueda de libros por título (case-insensitive)
+CREATE INDEX idx_libros_titulo
+  ON libros (LOWER(titulo));
+
+-- Búsqueda por autor
+CREATE INDEX idx_libros_autor
+  ON libros (autor);
+
+-- Consulta de copias por libro
+CREATE INDEX idx_copias_libro_id
+  ON copias (libro_id);
+
+-- Consulta de copias disponibles
+CREATE INDEX idx_copias_estado
+  ON copias (estado)
+  WHERE estado = 'disponible';
+
+-- Préstamos activos por socio
+CREATE INDEX idx_prestamos_socio_activo
+  ON prestamos (socio_id)
+  WHERE estado = 'activo';
+
+-- Préstamos por fecha (para reportes)
+CREATE INDEX idx_prestamos_fecha
+  ON prestamos (fecha_prestamo DESC);`}
+    />
+
+    <Callout tipo="info" titulo="Índices parciales">
+      <p>
+        Los índices con <code>WHERE</code> (parciales) son una
+        característica potente de PostgreSQL. Solo indexan las filas que
+        cumplen la condición, ahorrando espacio y acelerando consultas
+        específicas como «copias disponibles».
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Datos de prueba === -->
+  <section data-reveal>
+    <h2>Datos de prueba (seed)</h2>
+
+    <CodeBlock
+      language="sql"
+      filename="03_seed_data.sql"
+      code={`-- Socios
+INSERT INTO socios (nombre, email, telefono, estado) VALUES
+  ('Ana Torres',    'ana@dev.com',    '+34 600 111 222', 'activo'),
+  ('Bruno Ruiz',    'bruno@dev.com',  '+34 600 333 444', 'activo'),
+  ('Carla Vega',    'carla@dev.com',  '+34 600 555 666', 'suspendido');
+
+-- Libros
+INSERT INTO libros (isbn, titulo, autor, anio_publicacion, genero) VALUES
+  ('978-3-16-148410-0', 'Clean Code',     'Robert C. Martin', 2008, 'programacion'),
+  ('978-0-201-61586-3', 'The Pragmatic Programmer', 'Hunt & Thomas', 1999, 'programacion'),
+  ('978-0-13-235088-4', 'Clean Architecture', 'Robert C. Martin', 2017, 'programacion');
+
+-- Copias (2 copias del primer libro, 1 de cada otro)
+INSERT INTO copias (libro_id, estado) VALUES
+  (1, 'disponible'),
+  (1, 'prestado'),
+  (2, 'disponible'),
+  (3, 'disponible');
+
+-- Préstamo activo (la copia 2 está prestada)
+INSERT INTO prestamos (socio_id, copia_id, fecha_prestamo, fecha_devolucion)
+VALUES (1, 2, CURRENT_DATE - 5, CURRENT_DATE + 9);`}
+    />
+  </section>
+
+  <hr />
+
+  <!-- === Consultas === -->
+  <section data-reveal>
+    <h2>Consultas que responden a los escenarios BDD</h2>
+
+    <h3>¿Qué copias están disponibles de un libro?</h3>
+
+    <CodeBlock
+      language="sql"
+      filename="query_copias_disponibles.sql"
+      code={`SELECT c.id, c.estado, l.titulo, l.isbn
+FROM copias c
+JOIN libros l ON c.libro_id = l.id
+WHERE l.isbn = '978-3-16-148410-0'
+  AND c.estado = 'disponible';`}
+    />
+
+    <h3>¿Cuántos préstamos activos tiene un socio?</h3>
+
+    <CodeBlock
+      language="sql"
+      filename="query_prestamos_activos.sql"
+      code={`SELECT COUNT(*) AS prestamos_activos
+FROM prestamos
+WHERE socio_id = 1
+  AND estado = 'activo';
+-- Resultado: 1 (menor que el límite de 3)`}
+    />
+
+    <h3>Registrar un préstamo (transacción)</h3>
+
+    <CodeBlock
+      language="sql"
+      filename="transaccion_prestamo.sql"
+      code={`-- Transacción completa: préstamo + cambio de estado de copia
+BEGIN;
+
+-- 1. Verificar que la copia está disponible (con bloqueo)
+SELECT estado FROM copias
+WHERE id = 1
+FOR UPDATE;  -- bloquea la fila para otros lectores concurrentes
+
+-- 2. Verificar que el socio está activo
+SELECT estado FROM socios WHERE id = 2;
+-- Si 'suspendido' → ROLLBACK
+
+-- 3. Insertar el préstamo
+INSERT INTO prestamos (socio_id, copia_id, fecha_devolucion)
+VALUES (2, 1, CURRENT_DATE + 14);
+
+-- 4. Marcar la copia como prestada
+UPDATE copias SET estado = 'prestado' WHERE id = 1;
+
+COMMIT;`}
+    />
+
+    <Callout tipo="warn" titulo="Transacciones ACID">
+      <p>
+        El <code>BEGIN</code> / <code>COMMIT</code> garantiza que ambas
+        operaciones (insertar préstamo + actualizar copia) se ejecuten
+        atómicamente. Si algo falla, <code>ROLLBACK</code> revierte todo.
+        Sin esto, podríamos tener préstamos sin copia actualizada.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Acople con la aplicación === -->
+  <section data-reveal>
+    <h2>Acople con la aplicación: patrón Repository</h2>
+
+    <p>
+      Para que la aplicación no se acople directamente al SQL, usamos el
+      patrón <strong>Repository</strong>: una interfaz define las
+      operaciones y una implementación concreta usa SQL. El dominio
+      no sabe qué SGBD hay debajo.
+    </p>
+
+    <Mermaid
+      caption="Figura 9.1 — Flujo de una operación de préstamo a través de las capas"
+      diagram={`sequenceDiagram
+        participant UI as Controlador API
+        participant App as Servicio App
+        participant Repo as Repositorio (Interface)
+        participant Impl as Repositorio SQL
+        participant DB as PostgreSQL
+
+        UI->>App: registrarPrestamo(socioId, copiaId)
+        App->>App: validar reglas de negocio
+        App->>Repo: guardarPrestamo(prestamo)
+        Repo->>Impl: implementación concreta
+        Impl->>DB: BEGIN
+        Impl->>DB: SELECT ... FOR UPDATE
+        Impl->>DB: INSERT INTO prestamos
+        Impl->>DB: UPDATE copias
+        Impl->>DB: COMMIT
+        DB-->>Impl: OK
+        Impl-->>Repo: prestamo guardado
+        Repo-->>App: OK
+        App-->>UI: 201 Created`}
+    />
+  </section>
+
+  <hr />
+
+  <!-- === Implementación en código === -->
+  <section data-reveal>
+    <h2>Implementación del repositorio (Python + psycopg)</h2>
+
+    <CodeBlock
+      language="python"
+      filename="repository_prestamo.py"
+      code={`from dataclasses import dataclass
+from datetime import date, timedelta
+import psycopg
+
+@dataclass
+class Prestamo:
+    socio_id: int
+    copia_id: int
+    fecha_prestamo: date
+    fecha_devolucion: date
+
+class PrestamoRepository:
+    """Interfaz (port) del repositorio de préstamos."""
+
+    def guardar(self, prestamo: Prestamo) -> int:
+        raise NotImplementedError
+
+class PrestamoRepositorySQL(PrestamoRepository):
+    """Adaptador SQL usando psycopg con consultas parametrizadas."""
+
+    def __init__(self, conn: psycopg.Connection):
+        self._conn = conn
+
+    def guardar(self, prestamo: Prestamo) -> int:
+        """Inserta el préstamo y actualiza la copia en una transacción."""
+        with self._conn.transaction():
+            with self._conn.cursor() as cur:
+                # 1. Verificar copia disponible (con bloqueo)
+                cur.execute(
+                    "SELECT estado FROM copias WHERE id = %s FOR UPDATE",
+                    (prestamo.copia_id,)
+                )
+                row = cur.fetchone()
+                if not row or row[0] != 'disponible':
+                    raise ValueError("Copia no disponible")
+
+                # 2. Insertar préstamo (parametrizado, seguro)
+                cur.execute(
+                    """INSERT INTO prestamos
+                       (socio_id, copia_id, fecha_prestamo, fecha_devolucion)
+                       VALUES (%s, %s, %s, %s)
+                       RETURNING id""",
+                    (prestamo.socio_id, prestamo.copia_id,
+                     prestamo.fecha_prestamo, prestamo.fecha_devolucion)
+                )
+                prestamo_id = cur.fetchone()[0]
+
+                # 3. Marcar copia como prestada
+                cur.execute(
+                    "UPDATE copias SET estado = 'prestado' WHERE id = %s",
+                    (prestamo.copia_id,)
+                )
+
+                return prestamo_id`}
+    />
+
+    <Callout tipo="success" titulo="Seguridad por construcción">
+      <p>
+        Nótese que todas las consultas usan <code>%s</code>
+        (parametrizadas). No hay concatenación de strings, por lo que
+        el código es inmune a inyección SQL. La transacción
+        <code>with self._conn.transaction()</code> garantiza atomicidad.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Resumen caso práctico === -->
+  <section data-reveal>
+    <h2>Resumen del caso práctico completo</h2>
+
+    <div class="resumen-grid grid-2-col">
+      <div class="resumen-card tarjeta">
+        <h3 class="texto-acento">Sección 06 — Inicio</h3>
+        <p>Requisitos funcionales y no funcionales + escenarios BDD en Gherkin.</p>
+      </div>
+      <div class="resumen-card tarjeta">
+        <h3 class="texto-acento">Sección 07 — Modelado</h3>
+        <p>Diagrama ER con 4 entidades, 3 relaciones y diccionario de datos completo.</p>
+      </div>
+      <div class="resumen-card tarjeta">
+        <h3 class="texto-acento">Sección 08 — Normalización</h3>
+        <p>Verificación 1NF, 2NF y 3NF. El modelo final no presenta anomalías.</p>
+      </div>
+      <div class="resumen-card tarjeta">
+        <h3 class="texto-acento">Sección 09 — SQL y Acople</h3>
+        <p>Esquema SQL con constraints, índices parciales y patrón Repository.</p>
+      </div>
+    </div>
+
+    <Callout tipo="info" titulo="Camino recorrido">
+      <p>
+        Hemos ido del <strong>comportamiento</strong> (BDD, Gherkin) al
+        <strong>modelo</strong> (ER) a la <strong>normalización</strong>
+        (3NF) y finalmente a la <strong>implementación</strong> (SQL +
+        repositorio). Ese es el ciclo completo que propone esta revista.
+      </p>
+    </Callout>
+  </section>
+
+  
+</div>
+
+<style>
+  h2 {
+    font-size: var(--fs-2xl);
+    margin-bottom: var(--sp-4);
+  }
+
+  h3 {
+    font-size: var(--fs-lg);
+    margin: var(--sp-5) 0 var(--sp-3);
+  }
+
+  p {
+    font-size: var(--fs-md);
+    line-height: var(--lh-relaxed);
+    margin-bottom: var(--sp-4);
+  }
+
+  .resumen-card {
+    padding: var(--sp-5);
+    background: var(--c-bg-secundario);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+  }
+
+  .resumen-card h3 {
+    margin: 0 0 var(--sp-2) 0;
+    font-size: var(--fs-base);
+  }
+
+  .resumen-card p {
+    font-size: var(--fs-sm);
+    margin: 0;
+  }
+</style>

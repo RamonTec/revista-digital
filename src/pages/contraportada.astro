@@ -1,0 +1,14 @@
+---
+import RevistaLayout from '../layouts/RevistaLayout.astro';
+import NavPaginas from '../components/NavPaginas.astro';
+import Contraportada from '../sections/Contraportada.astro';
+---
+
+<RevistaLayout
+  titulo="Contraportada"
+  seccionActiva="contraportada"
+  descripcion="Créditos, referencias y cierre de la edición"
+>
+  <Contraportada />
+  <NavPaginas actual="contraportada" />
+</RevistaLayout>

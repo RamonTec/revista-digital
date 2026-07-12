@@ -1,0 +1,227 @@
+---
+// zona-tech.astro — Panorama de tendencias tecnológicas
+import SectionHeader from '../components/SectionHeader.astro';
+import Callout from '../components/Callout.astro';
+---
+
+<div class="hoja-contenido">
+<SectionHeader
+    numero="02"
+    titulo="Zona Tech"
+    descripcion="Tendencias, herramientas y novedades que están redefiniendo el desarrollo de software"
+    categoria="teoria"
+  />
+
+  <!-- === Tendencia 1 === -->
+  <section class="seccion-tech" data-reveal>
+    <h2 class="seccion-tech__titulo">
+      <span class="texto-acento mono">#01</span>
+      Bases de datos vectoriales: el nuevo estándar para IA
+    </h2>
+
+    <p>
+      Las <strong>bases de datos vectoriales</strong> han pasado de ser una
+      curiosidad de nicho a convertirse en infraestructura esencial para
+      cualquier aplicación que integre IA generativa. Sistemas como
+      <em>pgvector</em> (extensión de PostgreSQL), <em>Qdrant</em> y
+      <em>ChromaDB</em> permiten almacenar <em>embeddings</em> y realizar
+      búsquedas semánticas en tiempo real.
+    </p>
+
+    <p>
+      La clave está en que estas bases no reemplazan a las relacionales, sino
+      que las <strong>complementan</strong>. El patrón emergente es
+      <em>híbrido</em>: PostgreSQL para datos estructurados con
+      <code>pgvector</code> para similitud semántica en la misma instancia.
+    </p>
+
+    <Callout tipo="info" titulo="Caso de uso">
+      <p>
+        Un sistema de recomendación puede combinar una consulta SQL
+        tradicional (filtrar productos por categoría y precio) con una
+        búsqueda vectorial (encontrar productos similares por descripción
+        semántica) en una sola query.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Tendencia 2 === -->
+  <section class="seccion-tech" data-reveal>
+    <h2 class="seccion-tech__titulo">
+      <span class="texto-acento mono">#02</span>
+      Edge Computing y bases de datos distribuidas
+    </h2>
+
+    <p>
+      El <strong>edge computing</strong> está cambiando cómo pensamos la
+      latencia. En lugar de centralizar todo en un único datacenter, las
+      aplicaciones modernas replican datos geográficamente cerca del usuario.
+      Herramientas como <em>Cloudflare D1</em>, <em>Turso</em> (libSQL) y
+      <em>Neon</em> (PostgreSQL serverless) llevan la base de datos al borde.
+    </p>
+
+    <p>
+      El desafío técnico sigue siendo el mismo de siempre:
+      <strong>consistencia vs. disponibilidad</strong>. El teorema CAP no
+      perdona, pero las nuevas herramientas abstraen gran parte de la
+      complejidad de la replicación.
+    </p>
+
+    <Callout tipo="warn" titulo="Trade-off clave">
+      <p>
+        Mover la base al edge reduce latencia de lectura, pero introduce
+        complejidad en las escrituras. Evalúa si tu patrón de acceso es
+        <em>read-heavy</em> antes de adoptar esta arquitectura.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Tendencia 3 === -->
+  <section class="seccion-tech" data-reveal>
+    <h2 class="seccion-tech__titulo">
+      <span class="texto-acento mono">#03</span>
+      BDD y especificación ejecutable: madurez del ecosistema
+    </h2>
+
+    <p>
+      El <strong>Behavior-Driven Development</strong> ha alcanzado un nivel
+      de madurez notable. Herramientas como <em>Cucumber</em>,
+      <em>SpecFlow</em> y <em>Behave</em> permiten escribir especificaciones
+      en lenguaje natural (Gherkin) que se ejecutan como tests automatizados.
+    </p>
+
+    <p>
+      La tendencia actual es la integración nativa con pipelines CI/CD:
+      las especificaciones BDD no solo validan, sino que generan
+      <strong>documentación viva</strong> del comportamiento del sistema.
+    </p>
+
+    <Callout tipo="success" titulo="Beneficio real">
+      <p>
+        Los equipos que adoptan BDD reportan una reducción significativa en
+        los defectos de requisito (no de código), porque las
+        especificaciones se revisan <em>antes</em> de implementar.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Tabla comparativa === -->
+  <section data-reveal>
+    <h2 class="seccion-tech__titulo">
+      Tabla: bases de datos por caso de uso
+    </h2>
+
+    <div class="tabla-wrap">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Ejemplos</th>
+            <th>Ideal para</th>
+            <th>Trade-off</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Relacional</strong></td>
+            <td class="mono texto-sql">PostgreSQL, MySQL</td>
+            <td>Datos estructurados, ACID, relaciones complejas</td>
+            <td>Escalado horizontal complejo</td>
+          </tr>
+          <tr>
+            <td><strong>Documental</strong></td>
+            <td class="mono texto-sql">MongoDB, CouchDB</td>
+            <td>Esquemas flexibles, catálogos, CMS</td>
+            <td>Transacciones multi-documento limitadas</td>
+          </tr>
+          <tr>
+            <td><strong>Vectorial</strong></td>
+            <td class="mono texto-sql">Qdrant, ChromaDB</td>
+            <td>IA, RAG, búsqueda semántica</td>
+            <td>No apta para datos transaccionales</td>
+          </tr>
+          <tr>
+            <td><strong>Híbrida</strong></td>
+            <td class="mono texto-sql">pgvector, Turso</td>
+            <td>Combinar SQL + similitud semántica</td>
+            <td>Mayor complejidad de query planning</td>
+          </tr>
+          <tr>
+            <td><strong>Clave-valor</strong></td>
+            <td class="mono texto-sql">Redis, DynamoDB</td>
+            <td>Caché, sesiones, contadores</td>
+            <td>Sin relaciones ni queries complejas</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  
+</div>
+
+<style>
+  .seccion-tech {
+    margin-bottom: var(--sp-6);
+  }
+
+  .seccion-tech__titulo {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-3);
+    font-size: var(--fs-xl);
+    margin-bottom: var(--sp-4);
+    flex-wrap: wrap;
+  }
+
+  .seccion-tech p {
+    font-size: var(--fs-md);
+    line-height: var(--lh-relaxed);
+    margin-bottom: var(--sp-4);
+  }
+
+  /* === Tabla === */
+  .tabla-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+    margin: var(--sp-5) 0;
+  }
+
+  .tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-sm);
+    min-width: 600px;
+  }
+
+  .tabla th {
+    text-align: left;
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--c-bg-terciario);
+    font-weight: var(--fw-semibold);
+    color: var(--c-acento);
+    border-bottom: 2px solid var(--c-borde);
+    white-space: nowrap;
+  }
+
+  .tabla td {
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--c-borde);
+    vertical-align: top;
+  }
+
+  .tabla tr:last-child td {
+    border-bottom: none;
+  }
+
+  .tabla tr:hover td {
+    background: var(--c-bg-secundario);
+  }
+</style>

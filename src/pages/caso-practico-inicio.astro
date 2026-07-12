@@ -1,0 +1,14 @@
+---
+import RevistaLayout from '../layouts/RevistaLayout.astro';
+import NavPaginas from '../components/NavPaginas.astro';
+import CasoInicio from '../sections/CasoInicio.astro';
+---
+
+<RevistaLayout
+  titulo="Caso Práctico: Inicio"
+  seccionActiva="caso-practico-inicio"
+  descripcion="Planteamiento del problema y requisitos del sistema de biblioteca"
+>
+  <CasoInicio />
+  <NavPaginas actual="caso-practico-inicio" />
+</RevistaLayout>

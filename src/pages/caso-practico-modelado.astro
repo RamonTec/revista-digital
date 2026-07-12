@@ -1,0 +1,14 @@
+---
+import RevistaLayout from '../layouts/RevistaLayout.astro';
+import NavPaginas from '../components/NavPaginas.astro';
+import CasoModelado from '../sections/CasoModelado.astro';
+---
+
+<RevistaLayout
+  titulo="Caso Práctico: Modelado"
+  seccionActiva="caso-practico-modelado"
+  descripcion="Diseño del modelo entidad-relación del sistema de biblioteca"
+>
+  <CasoModelado />
+  <NavPaginas actual="caso-practico-modelado" />
+</RevistaLayout>

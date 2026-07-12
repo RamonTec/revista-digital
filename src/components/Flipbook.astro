@@ -1,0 +1,307 @@
+---
+// ============================================================
+// Flipbook.astro — Wrapper de StPageFlip (page-flip)
+// Renderiza las 12 secciones como hojas de un libro físico
+// Arrastre real con mouse/touch, sombras 3D, responsive
+// ============================================================
+
+import Portada from '../sections/Portada.astro';
+import EditorialIndice from '../sections/EditorialIndice.astro';
+import ZonaTech from '../sections/ZonaTech.astro';
+import FundamentosBDD from '../sections/FundamentosBDD.astro';
+import ArquitecturaModelado from '../sections/ArquitecturaModelado.astro';
+import Seguridad from '../sections/Seguridad.astro';
+import CasoInicio from '../sections/CasoInicio.astro';
+import CasoModelado from '../sections/CasoModelado.astro';
+import CasoNormalizacion from '../sections/CasoNormalizacion.astro';
+import CasoSQLAcople from '../sections/CasoSQLAcople.astro';
+import EspacimientoMental from '../sections/EspacimientoMental.astro';
+import Contraportada from '../sections/Contraportada.astro';
+
+import { secciones } from '../data/secciones';
+---
+
+<div class="flipbook-app">
+  <div class="flipbook-container">
+    <div class="page-flip-root" id="book">
+      <div class="page-flip-page" data-density="hard">
+        <Portada />
+      </div>
+      <div class="page-flip-page">
+        <EditorialIndice />
+      </div>
+      <div class="page-flip-page">
+        <ZonaTech />
+      </div>
+      <div class="page-flip-page">
+        <FundamentosBDD />
+      </div>
+      <div class="page-flip-page">
+        <ArquitecturaModelado />
+      </div>
+      <div class="page-flip-page">
+        <Seguridad />
+      </div>
+      <div class="page-flip-page">
+        <CasoInicio />
+      </div>
+      <div class="page-flip-page">
+        <CasoModelado />
+      </div>
+      <div class="page-flip-page">
+        <CasoNormalizacion />
+      </div>
+      <div class="page-flip-page">
+        <CasoSQLAcople />
+      </div>
+      <div class="page-flip-page">
+        <EspacimientoMental />
+      </div>
+      <div class="page-flip-page" data-density="hard">
+        <Contraportada />
+      </div>
+    </div>
+  </div>
+
+  <!-- Controles de navegación -->
+  <div class="flip-controls" id="flip-controls">
+    <button class="flip-btn" id="flip-prev" type="button" aria-label="Página anterior">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+      <span>Anterior</span>
+    </button>
+
+    <button class="flip-indice-toggle" id="flip-indice-toggle" type="button" aria-label="Índice">
+      Índice
+    </button>
+
+    <span class="flip-indicator" id="flip-indicator">
+      <strong id="flip-current">1</strong> / {secciones.length}
+    </span>
+
+    <button class="flip-btn" id="flip-next" type="button" aria-label="Página siguiente">
+      <span>Siguiente</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="9 18 15 12 9 6" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Panel de índice desplegable -->
+  <div class="flip-indice-overlay" id="flip-indice-overlay"></div>
+  <div class="flip-indice-panel" id="flip-indice-panel" role="dialog" aria-label="Índice de la revista">
+    <div class="flip-indice-panel__header">
+      <span class="flip-indice-panel__titulo">Índice</span>
+      <button class="flip-indice-panel__close" id="flip-indice-close" type="button" aria-label="Cerrar índice">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+    <div class="flip-indice-lista" id="flip-indice-lista">
+      {secciones.map((s) => (
+        <div
+          class="flip-indice-item"
+          data-page-num={s.pageNum}
+          data-slug={s.slug}
+          role="button"
+          tabindex="0"
+          aria-label={`Ir a ${s.titulo}`}
+        >
+          <span class="flip-indice-item__num texto-acento mono">{s.numero}</span>
+          <span class="flip-indice-item__titulo">{s.titulo}</span>
+          <span class="flip-indice-item__cat">{s.categoria}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+
+<script>
+  import { PageFlip } from 'page-flip';
+  import { secciones } from '../data/secciones';
+
+  type PageFlipInstance = InstanceType<typeof PageFlip>;
+  let pageFlip: PageFlipInstance | null = null;
+
+  function initFlipbook() {
+    const bookEl = document.getElementById('book');
+    if (!bookEl) return;
+
+    // Guard: no reinicializar si el flipbook ya está activo
+    if (pageFlip) {
+      // Verificar si la instancia sigue válida (el elemento existe y tiene hijos)
+      const hasChildren = bookEl.querySelector('.stf__wrapper') || bookEl.querySelector('canvas');
+      if (hasChildren) return;
+      // Si no tiene hijos, la instancia quedó huérfana — limpiar
+      try { pageFlip.destroy(); } catch {}
+      pageFlip = null;
+    }
+
+    pageFlip = new PageFlip(bookEl, {
+      width: 450,
+      height: 600,
+      size: 'stretch',
+      minWidth: 315,
+      maxWidth: 1000,
+      minHeight: 420,
+      maxHeight: 1350,
+      drawShadow: true,
+      flippingTime: 800,
+      usePortrait: true,
+      startZIndex: 0,
+      maxShadowOpacity: 0.5,
+      showCover: true,
+      mobileScrollSupport: true,
+      swipeDistance: 30,
+      clickEventForward: true,
+      useMouseEvents: true,
+      disableFlipByClick: false,
+    });
+
+    pageFlip.loadFromHTML(document.querySelectorAll('.page-flip-page'));
+
+    // === Evento: página cambiada ===
+    pageFlip.on('flip', (e: { data: number }) => {
+      const pageNum = e.data;
+      updateIndicator(pageNum);
+      updateButtons(pageNum);
+      highlightCurrentIndice(pageNum);
+      updateProgress(pageNum);
+
+      // Feedback háptico
+      if ('vibrate' in navigator) {
+        navigator.vibrate(10);
+      }
+
+      // Re-inicializar scroll-reveal de la hoja visible
+      setTimeout(() => {
+        const event = new Event('astro:page-load');
+        document.dispatchEvent(event);
+      }, 300);
+    });
+
+    // === Inicializar controles ===
+    initControls();
+
+    // Estado inicial
+    updateIndicator(0);
+    updateButtons(0);
+
+    // Exponer globalmente para FlipControls o debug
+    (window as any).__pageFlip = pageFlip;
+  }
+
+  function updateIndicator(pageNum: number) {
+    const currentEl = document.getElementById('flip-current');
+    if (currentEl) {
+      currentEl.textContent = String(pageNum + 1);
+    }
+  }
+
+  function updateButtons(pageNum: number) {
+    const prevBtn = document.getElementById('flip-prev') as HTMLButtonElement | null;
+    const nextBtn = document.getElementById('flip-next') as HTMLButtonElement | null;
+    const total = secciones.length;
+
+    if (prevBtn) prevBtn.disabled = pageNum === 0;
+    if (nextBtn) nextBtn.disabled = pageNum === total - 1;
+  }
+
+  function updateProgress(pageNum: number) {
+    const fill = document.getElementById('progress-fill');
+    if (fill) {
+      const progress = ((pageNum + 1) / secciones.length) * 100;
+      fill.style.width = `${progress}%`;
+    }
+  }
+
+  function highlightCurrentIndice(pageNum: number) {
+    document.querySelectorAll('.flip-indice-item').forEach((el) => {
+      const num = parseInt(el.getAttribute('data-page-num') || '-1', 10);
+      el.classList.toggle('actual', num === pageNum);
+    });
+  }
+
+  function initControls() {
+    const prevBtn = document.getElementById('flip-prev');
+    const nextBtn = document.getElementById('flip-next');
+    const indiceToggle = document.getElementById('flip-indice-toggle');
+    const indicePanel = document.getElementById('flip-indice-panel');
+    const indiceOverlay = document.getElementById('flip-indice-overlay');
+    const indiceClose = document.getElementById('flip-indice-close');
+    const indiceItems = document.querySelectorAll('.flip-indice-item');
+
+    // Botones anterior/siguiente
+    prevBtn?.addEventListener('click', () => {
+      pageFlip?.flipPrev('top');
+    });
+
+    nextBtn?.addEventListener('click', () => {
+      pageFlip?.flipNext('top');
+    });
+
+    // Índice: abrir/cerrar
+    function abrirIndice() {
+      indicePanel?.classList.add('visible');
+      indiceOverlay?.classList.add('visible');
+      indiceToggle?.classList.add('activa');
+    }
+
+    function cerrarIndice() {
+      indicePanel?.classList.remove('visible');
+      indiceOverlay?.classList.remove('visible');
+      indiceToggle?.classList.remove('activa');
+    }
+
+    indiceToggle?.addEventListener('click', abrirIndice);
+    indiceClose?.addEventListener('click', cerrarIndice);
+    indiceOverlay?.addEventListener('click', cerrarIndice);
+
+    // Items del índice: saltar a página
+    indiceItems.forEach((item) => {
+      const pageNum = parseInt(item.getAttribute('data-page-num') || '0', 10);
+      const goToPage = () => {
+        pageFlip?.flip(pageNum, 'top');
+        cerrarIndice();
+      };
+      item.addEventListener('click', goToPage);
+      item.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          goToPage();
+        }
+      });
+    });
+
+    // Teclado: flechas izq/derecha
+    document.addEventListener('keydown', (e) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        pageFlip?.flipNext('top');
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        pageFlip?.flipPrev('top');
+      } else if (e.key === 'Escape') {
+        cerrarIndice();
+      }
+    });
+  }
+
+  // === Auto-init ===
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFlipbook);
+  } else {
+    initFlipbook();
+  }
+
+  // Nota: NO escuchar astro:page-load aquí.
+  // FlipLayout no usa ClientRouter, por lo que ese evento nunca debería dispararse.
+  // Si se dispara (por residual del redirect), causaría doble-init y parpadeo.
+</script>

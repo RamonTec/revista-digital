@@ -1,0 +1,319 @@
+---
+// caso-practico-inicio.astro — Planteamiento del caso práctico
+import SectionHeader from '../components/SectionHeader.astro';
+import Callout from '../components/Callout.astro';
+---
+
+<div class="hoja-contenido">
+<SectionHeader
+    numero="06"
+    titulo="Caso Práctico: Inicio"
+    descripcion="Planteamiento del problema, requisitos y especificación BDD inicial"
+    categoria="practica"
+  />
+
+  <!-- === Contexto === -->
+  <section data-reveal>
+    <h2>El problema: gestión de una biblioteca</h2>
+
+    <p>
+      La <strong>Biblioteca Municipal Aurora</strong> necesita un sistema
+      digital para reemplazar su gestión manual en papel. El sistema debe
+      controlar el catálogo de libros, los socios registrados y el ciclo
+      completo de préstamos y devoluciones.
+    </p>
+
+    <p>
+      A lo largo de las próximas cuatro secciones recorreremos el ciclo
+      completo de desarrollo: <strong>requisitos → modelo → normalización
+      → SQL</strong>. Cada paso construye sobre el anterior, como en un
+      proyecto real.
+    </p>
+
+    <Callout tipo="info" titulo="Metodología">
+      <p>
+        Seguiremos el flujo BDD visto en la sección 03: partiremos de
+        escenarios en Gherkin, los traduciremos a un modelo ER, lo
+        normalizaremos y finalmente implementaremos el esquema SQL con
+        constraints e índices.
+      </p>
+    </Callout>
+  </section>
+
+  <hr />
+
+  <!-- === Requisitos funcionales === -->
+  <section data-reveal>
+    <h2>Requisitos funcionales</h2>
+
+    <h3>Gestión de socios</h3>
+    <ul class="req-list">
+      <li>Alta de socios con datos personales y fecha de registro</li>
+      <li>Un socio puede tener estado <code>activo</code> o <code>suspendido</code></li>
+      <li>Cada socio tiene un email único y un teléfono de contacto</li>
+      <li>Máximo 3 préstamos simultáneos por socio activo</li>
+    </ul>
+
+    <h3>Gestión de libros</h3>
+    <ul class="req-list">
+      <li>Cada libro tiene ISBN único, título, autor y año de publicación</li>
+      <li>La biblioteca puede tener múltiples copias del mismo libro</li>
+      <li>Cada copia tiene un estado: <code>disponible</code>, <code>prestado</code>, <code>en_reparacion</code></li>
+      <li>Un libro se categoriza por género (un género por libro)</li>
+    </ul>
+
+    <h3>Préstamos</h3>
+    <ul class="req-list">
+      <li>Un préstamo asocia una copia a un socio con fecha de préstamo y devolución</li>
+      <li>Plazo por defecto: 14 días</li>
+      <li>Si la devolución se retrasa, se registra la fecha real de devolución</li>
+      <li>Un socio suspendido no puede realizar préstamos</li>
+    </ul>
+  </section>
+
+  <hr />
+
+  <!-- === Requisitos no funcionales === -->
+  <section data-reveal>
+    <h2>Requisitos no funcionales</h2>
+
+    <div class="grid-2-col">
+      <div class="req-nf tarjeta">
+        <h3 class="texto-alt">Rendimiento</h3>
+        <ul>
+          <li>Búsqueda de libros por título en &lt; 100ms</li>
+          <li>Consulta de préstamos activos en &lt; 50ms</li>
+          <li>Soporta 50 usuarios concurrentes</li>
+        </ul>
+      </div>
+      <div class="req-nf tarjeta">
+        <h3 class="texto-alt">Seguridad</h3>
+        <ul>
+          <li>Contraseñas con hash bcrypt</li>
+          <li>Roles diferenciados: bibliotecario vs socio</li>
+          <li>Auditoría de préstamos y devoluciones</li>
+        </ul>
+      </div>
+      <div class="req-nf tarjeta">
+        <h3 class="texto-alt">Integridad</h3>
+        <ul>
+          <li>No prestar copias en reparación</li>
+          <li>No exceder límite de préstamos por socio</li>
+          <li>Fecha de devolución siempre posterior al préstamo</li>
+        </ul>
+      </div>
+      <div class="req-nf tarjeta">
+        <h3 class="texto-alt">Disponibilidad</h3>
+        <ul>
+          <li>Backup diario automático</li>
+          <li>Disponibilidad 24/7 (excepto ventana de mantenimiento)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- === Escenarios BDD iniciales === -->
+  <section data-reveal>
+    <h2>Especificación BDD inicial</h2>
+
+    <p>
+      Antes de diseñar tablas, escribimos los escenarios más importantes
+      en Gherkin. Estos escenarios guiarán el modelado: cada entidad y
+      relación debe poder responder a los escenarios.
+    </p>
+
+    <div class="escenario-bloque">
+      <h3 class="escenario-bloque__titulo">
+        <span class="mono texto-acento">Feature:</span> Registro de préstamo
+      </h3>
+      <pre class="escenario-code"><code>Scenario: Préstamo exitoso de una copia disponible
+  Given un socio "S-042" con estado "activo"
+  And una copia "C-103" del libro "978-3-16-148410-0" disponible
+  When el bibliotecario registra un préstamo de la copia al socio
+  Then la copia "C-103" debe cambiar a estado "prestado"
+  And el préstamo debe tener fecha de devolución en 14 días
+  And el socio "S-042" debe tener 1 préstamo activo
+
+Scenario: No prestar a socio suspendido
+  Given un socio "S-089" con estado "suspendido"
+  When el bibliotecario intenta registrar un préstamo
+  Then debe rechazarse con error "Socio suspendido"
+  And no debe crearse ningún préstamo
+
+Scenario: No prestar copia no disponible
+  Given una copia "C-207" en estado "prestado"
+  When el bibliotecario intenta registrar un préstamo
+  Then debe rechazarse con error "Copia no disponible"</code></pre>
+    </div>
+
+    <div class="escenario-bloque">
+      <h3 class="escenario-bloque__titulo">
+        <span class="mono texto-acento">Feature:</span> Devolución de libro
+      </h3>
+      <pre class="escenario-code"><code>Scenario: Devolución en plazo
+  Given un préstamo "P-300" con fecha de devolución "2026-07-20"
+  When el socio devuelve el libro el "2026-07-18"
+  Then el préstamo debe registrar fecha_real_devolucion "2026-07-18"
+  And la copia debe cambiar a estado "disponible"
+
+Scenario: Devolución con retraso
+  Given un préstamo "P-310" con fecha de devolución "2026-07-15"
+  When el socio devuelve el libro el "2026-07-22"
+  Then el préstamo debe registrar fecha_real_devolucion "2026-07-22"
+  And debe marcarse como "retrasado"
+  And la copia debe cambiar a estado "disponible"</code></pre>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- === Entidades identificadas === -->
+  <section data-reveal>
+    <h2>Entidades identificadas a partir de los escenarios</h2>
+
+    <p>
+      Del análisis de los requisitos y los escenarios BDD, emergen las
+      siguientes entidades. En la siguiente sección (Modelado) las
+      convertiremos en un diagrama ER formal.
+    </p>
+
+    <div class="grid-2-col">
+      <div class="entidad-card tarjeta">
+        <h3 class="texto-acento">SOCIO</h3>
+        <p class="mono texto-dim">id, nombre, email, telefono, estado, fecha_alta</p>
+      </div>
+      <div class="entidad-card tarjeta">
+        <h3 class="texto-acento">LIBRO</h3>
+        <p class="mono texto-dim">isbn, titulo, autor, anio, genero</p>
+      </div>
+      <div class="entidad-card tarjeta">
+        <h3 class="texto-acento">COPIA</h3>
+        <p class="mono texto-dim">id, libro_id, estado, fecha_adquisicion</p>
+      </div>
+      <div class="entidad-card tarjeta">
+        <h3 class="texto-acento">PRESTAMO</h3>
+        <p class="mono texto-dim">id, socio_id, copia_id, fecha_prestamo, fecha_devolucion, fecha_real_devolucion</p>
+      </div>
+    </div>
+
+    <Callout tipo="success" titulo="Continúa en">
+      <p>
+        Sección 07 — Caso Práctico: Modelado. Diseñaremos el diagrama
+        entidad-relación completo con cardinalidades y claves.
+      </p>
+    </Callout>
+  </section>
+
+  
+</div>
+
+<style>
+  h2 {
+    font-size: var(--fs-2xl);
+    margin-bottom: var(--sp-4);
+  }
+
+  h3 {
+    font-size: var(--fs-lg);
+    margin: var(--sp-5) 0 var(--sp-3);
+  }
+
+  p {
+    font-size: var(--fs-md);
+    line-height: var(--lh-relaxed);
+    margin-bottom: var(--sp-4);
+  }
+
+  .req-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    margin: var(--sp-3) 0 var(--sp-5);
+    padding-left: 0;
+  }
+
+  .req-list li {
+    position: relative;
+    padding-left: var(--sp-5);
+    font-size: var(--fs-sm);
+    line-height: var(--lh-normal);
+  }
+
+  .req-list li::before {
+    content: '▸';
+    position: absolute;
+    left: var(--sp-2);
+    color: var(--c-acento);
+  }
+
+  .req-nf,
+  .entidad-card {
+    padding: var(--sp-5);
+    background: var(--c-bg-secundario);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+  }
+
+  .req-nf h3 {
+    margin: 0 0 var(--sp-3) 0;
+  }
+
+  .req-nf ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  .req-nf li {
+    font-size: var(--fs-sm);
+    padding-left: var(--sp-4);
+    position: relative;
+  }
+
+  .req-nf li::before {
+    content: '•';
+    position: absolute;
+    left: var(--sp-2);
+    color: var(--c-acento-alt);
+  }
+
+  .entidad-card h3 {
+    margin: 0 0 var(--sp-2) 0;
+    font-family: var(--font-mono);
+    font-size: var(--fs-base);
+  }
+
+  .entidad-card p {
+    font-size: var(--fs-xs);
+    margin: 0;
+    line-height: var(--lh-normal);
+  }
+
+  .escenario-bloque {
+    margin: var(--sp-5) 0;
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+    overflow: hidden;
+  }
+
+  .escenario-bloque__titulo {
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--c-bg-terciario);
+    margin: 0;
+    font-size: var(--fs-base);
+    border-bottom: 1px solid var(--c-borde);
+  }
+
+  .escenario-code {
+    padding: var(--sp-4);
+    background: var(--c-bg-codigo);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    line-height: var(--lh-relaxed);
+    color: var(--c-texto);
+    margin: 0;
+  }
+</style>

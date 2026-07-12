@@ -1,0 +1,65 @@
+---
+// ============================================================
+// FlipLayout.astro — Layout del flipbook (single-page)
+// Sin ClientRouter, sin nav lateral, sin scroll tradicional
+// ============================================================
+
+import ProgressBar from '../components/ProgressBar.astro';
+import { revista } from '../data/secciones';
+
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/animations.css';
+import '../styles/responsive.css';
+import '../styles/prism-theme.css';
+import '../styles/flipbook.css';
+
+const {
+  titulo = '',
+  descripcion = '',
+} = Astro.props as {
+  titulo?: string;
+  descripcion?: string;
+};
+
+const tituloCompleto = `${titulo} — ${revista.nombre}`;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descripcion || revista.lema} />
+    <meta name="theme-color" content="#0f1419" />
+    <meta name="robots" content="noindex,follow" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descripcion || revista.lema} />
+    <meta property="og:type" content="article" />
+
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+
+  <body class="flipbook-body">
+    <ProgressBar />
+    <slot />
+
+    <script>
+      import '../scripts/scroll-reveal';
+      import '../scripts/progress';
+    </script>
+  </body>
+</html>

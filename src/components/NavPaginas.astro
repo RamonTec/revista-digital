@@ -1,0 +1,124 @@
+---
+// ============================================================
+// NavPaginas.astro — Navegación entre secciones (anterior/siguiente)
+// ============================================================
+
+import { secciones } from '../data/secciones';
+
+const { actual } = Astro.props as { actual: string };
+
+const indice = secciones.findIndex((s) => s.slug === actual);
+const anterior = indice > 0 ? secciones[indice - 1] : null;
+const siguiente = indice < secciones.length - 1 ? secciones[indice + 1] : null;
+---
+
+<nav class="nav-paginas" aria-label="Navegación entre secciones">
+  {anterior && (
+    <a href={anterior.href} class="nav-pagina nav-pagina--anterior" data-reveal="left"
+       data-navigate data-nav-direction="back">
+      <span class="nav-pagina__dir texto-dim">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+        Anterior
+      </span>
+      <span class="nav-pagina__num mono texto-acento">{anterior.numero}</span>
+      <span class="nav-pagina__titulo">{anterior.titulo}</span>
+    </a>
+  )}
+
+  {siguiente && (
+    <a href={siguiente.href} class="nav-pagina nav-pagina--siguiente" data-reveal="right"
+       data-navigate data-nav-direction="forward">
+      <span class="nav-pagina__dir texto-dim">
+        Siguiente
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </span>
+      <span class="nav-pagina__num mono texto-acento">{siguiente.numero}</span>
+      <span class="nav-pagina__titulo">{siguiente.titulo}</span>
+    </a>
+  )}
+</nav>
+
+<style>
+  .nav-paginas {
+    display: flex;
+    gap: var(--sp-4);
+    margin-top: var(--sp-8);
+    padding-top: var(--sp-6);
+    border-top: 1px solid var(--c-borde);
+  }
+
+  .nav-pagina {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+    padding: var(--sp-4) var(--sp-5);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+    text-decoration: none;
+    color: var(--c-texto);
+    transition: all var(--t-normal);
+  }
+
+  .nav-pagina:hover {
+    border-color: var(--c-acento);
+    background: var(--c-bg-secundario);
+    box-shadow: var(--shadow-glow);
+  }
+
+  .nav-pagina--siguiente {
+    text-align: right;
+    align-items: flex-end;
+  }
+
+  .nav-pagina--anterior {
+    align-items: flex-start;
+  }
+
+  .nav-pagina:only-child {
+    flex: 1;
+  }
+
+  .nav-pagina__dir {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .nav-pagina--siguiente .nav-pagina__dir {
+    flex-direction: row-reverse;
+  }
+
+  .nav-pagina__num {
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+  }
+
+  .nav-pagina__titulo {
+    font-size: var(--fs-md);
+    font-weight: var(--fw-medium);
+    line-height: 1.3;
+  }
+
+  @media (max-width: 639px) {
+    .nav-paginas {
+      flex-direction: column;
+    }
+
+    .nav-pagina--siguiente {
+      text-align: left;
+      align-items: flex-start;
+    }
+
+    .nav-pagina--siguiente .nav-pagina__dir {
+      flex-direction: row;
+    }
+  }
+</style>

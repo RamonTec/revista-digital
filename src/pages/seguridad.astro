@@ -1,0 +1,14 @@
+---
+import RevistaLayout from '../layouts/RevistaLayout.astro';
+import NavPaginas from '../components/NavPaginas.astro';
+import Seguridad from '../sections/Seguridad.astro';
+---
+
+<RevistaLayout
+  titulo="Seguridad"
+  seccionActiva="seguridad"
+  descripcion="Buenas prácticas de seguridad en bases de datos relacionales"
+>
+  <Seguridad />
+  <NavPaginas actual="seguridad" />
+</RevistaLayout>

@@ -1,0 +1,35 @@
+---
+// ============================================================
+// ProgressBar.astro — Barra de progreso de lectura
+// Se actualiza según el scroll del usuario
+// ============================================================
+---
+
+<div class="progress-bar" id="progress-bar" aria-hidden="true">
+  <div class="progress-bar__fill" id="progress-fill"></div>
+</div>
+
+<style>
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: transparent;
+    z-index: var(--z-progress);
+    pointer-events: none;
+  }
+
+  .progress-bar__fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(
+      90deg,
+      var(--c-acento),
+      var(--c-acento-alt)
+    );
+    transition: width 80ms linear;
+    box-shadow: 0 0 8px rgba(0, 217, 163, 0.5);
+  }
+</style>
