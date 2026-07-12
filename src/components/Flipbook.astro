@@ -155,8 +155,17 @@ import { secciones } from '../data/secciones';
     const container = document.querySelector('.flipbook-container') as HTMLElement | null;
     if (container) {
       const rect = container.getBoundingClientRect();
-      const width = Math.floor(rect.width) - 2;
+      let width = Math.floor(rect.width) - 2;
       const height = Math.floor(rect.height) - 2;
+      
+      // PageFlip requiere el ancho de UNA SOLA página.
+      // En modo landscape (pantalla horizontal), StPageFlip muestra 2 páginas lado a lado.
+      // Para que el libro abarque toda la pantalla sin reducir su altura (escalado),
+      // el ancho de una página debe ser exactamente la mitad del contenedor.
+      if (width > height) {
+        width = Math.floor(width / 2);
+      }
+
       if (width > 0 && height > 0) {
         return { width, height };
       }
@@ -164,17 +173,14 @@ import { secciones } from '../data/secciones';
 
     // Fallback si no se pudo medir el contenedor
     if (isMobile) {
-      return {
-        width: Math.max(vw - 20, 300),
-        height: Math.max(vh - 80, 400),
-      };
+      return { width: Math.max(vw - 20, 300), height: Math.max(vh - 80, 400) };
     } else {
       const padding = 32;
       const controlsAndGap = 76;
-      return {
-        width: Math.max(vw - padding, 300),
-        height: Math.max(vh - padding - controlsAndGap, 400),
-      };
+      let w = Math.max(vw - padding, 300);
+      let h = Math.max(vh - padding - controlsAndGap, 400);
+      if (w > h) w = Math.floor(w / 2);
+      return { width: w, height: h };
     }
   }
 
@@ -481,7 +487,13 @@ import { secciones } from '../data/secciones';
     }
   }
 
+  let wasMobile = window.innerWidth <= 768;
   window.addEventListener('resize', () => {
+    const isMobileNow = window.innerWidth <= 768;
+    if (wasMobile !== isMobileNow) {
+      window.location.reload();
+      return;
+    }
     if (resizeTimer) clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(recalcularDimensiones, 200);
   });
