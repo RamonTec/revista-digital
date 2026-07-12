@@ -19,52 +19,52 @@ import Callout from '../components/Callout.astro';
     <h2>Modelo conceptual: entidades y relaciones</h2>
 
     <p>
-      A partir de los requisitos de la sección anterior, identificamos
-      <strong>cuatro entidades</strong> y <strong>tres relaciones</strong>.
+      A partir de los requisitos de la sección anterior, identificamos 
+      <strong> cuatro entidades</strong> y <strong>tres relaciones</strong>.
       Antes de pensar en columnas, definimos cómo se relacionan.
     </p>
 
     <Mermaid
       caption="Figura 7.1 — Diagrama ER conceptual de la biblioteca"
       diagram={`erDiagram
-        SOCIO ||--o{ PRESTAMO : "realiza"
-        COPIA ||--o{ PRESTAMO : "es objeto de"
-        LIBRO ||--o{ COPIA : "tiene"}
+    SOCIO ||--o{ PRESTAMO : "realiza"
+    COPIA ||--o{ PRESTAMO : "es objeto de"
+    LIBRO ||--o{ COPIA : "tiene"
 
-        SOCIO {
-          int id PK
-          string nombre
-          string email UK
-          string telefono
-          string estado
-          date fecha_alta
-        }
+    SOCIO {
+      int id PK
+      string nombre
+      string email UK
+      string telefono
+      string estado
+      date fecha_alta
+    }
 
-        LIBRO {
-          int id PK
-          string isbn UK
-          string titulo
-          string autor
-          int anio_publicacion
-          string genero
-        }
+    LIBRO {
+      int id PK
+      string isbn UK
+      string titulo
+      string autor
+      int anio_publicacion
+      string genero
+    }
 
-        COPIA {
-          int id PK
-          int libro_id FK
-          string estado
-          date fecha_adquisicion
-        }
+    COPIA {
+      int id PK
+      int libro_id FK
+      string estado
+      date fecha_adquisicion
+    }
 
-        PRESTAMO {
-          int id PK
-          int socio_id FK
-          int copia_id FK
-          date fecha_prestamo
-          date fecha_devolucion
-          date fecha_real_devolucion
-          string estado
-        }`}
+    PRESTAMO {
+      int id PK
+      int socio_id FK
+      int copia_id FK
+      date fecha_prestamo
+      date fecha_devolucion
+      date fecha_real_devolucion
+      string estado
+    }`}
     />
   </section>
 

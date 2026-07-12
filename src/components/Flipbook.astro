@@ -75,6 +75,7 @@ import { secciones } from '../data/secciones';
     </div>
   </div>
 
+
   <!-- Controles de navegación -->
   <div class="flip-controls" id="flip-controls">
     <button class="flip-btn" id="flip-prev" type="button" aria-label="Página anterior">
@@ -101,17 +102,7 @@ import { secciones } from '../data/secciones';
   </div>
 
   <!-- Panel de índice desplegable -->
-  <div class="flip-indice-overlay" id="flip-indice-overlay"></div>
   <div class="flip-indice-panel" id="flip-indice-panel" role="dialog" aria-label="Índice de la revista">
-    <div class="flip-indice-panel__header">
-      <span class="flip-indice-panel__titulo">Índice</span>
-      <button class="flip-indice-panel__close" id="flip-indice-close" type="button" aria-label="Cerrar índice">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
-      </button>
-    </div>
     <div class="flip-indice-lista" id="flip-indice-lista">
       {secciones.map((s) => (
         <div
@@ -138,6 +129,49 @@ import { secciones } from '../data/secciones';
   type PageFlipInstance = InstanceType<typeof PageFlip>;
   let pageFlip: PageFlipInstance | null = null;
 
+  // === Calcular dimensiones dinámicas según viewport ===
+  // En móvil: aprovechar toda la pantalla (portrait). En desktop: mantener
+  // aspect ratio landscape para 2 páginas lado a lado.
+  function calculateFlipbookDimensions() {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const isMobile = vw <= 768;
+
+    // Reservar espacio para controles inferiores y padding
+    const controlsHeight = isMobile ? 70 : 60;
+    const padding = isMobile ? 16 : 32;
+    const availableHeight = vh - controlsHeight - padding * 2;
+    const availableWidth = vw - padding * 2;
+
+    let width: number;
+    let height: number;
+
+    if (isMobile) {
+      // Móvil: usar toda la altura disponible, ancho = alto * 3/4
+      height = Math.min(availableHeight, 1400);
+      width = Math.min(height * 0.75, availableWidth);
+      // Si el ancho resultante excede el disponible, recalcular desde ancho
+      if (width >= availableWidth) {
+        width = availableWidth;
+        height = Math.min(width * 1.333, 1400);
+      }
+    } else {
+      // Desktop: landscape 16/10, 2 páginas lado a lado
+      width = Math.min(availableWidth, 1100);
+      height = Math.min(width * 0.625, availableHeight);
+      if (height >= availableHeight) {
+        height = availableHeight;
+        width = Math.min(height * 1.6, 1100);
+      }
+    }
+
+    // Mínimos
+    width = Math.max(width, 300);
+    height = Math.max(height, 400);
+
+    return { width: Math.round(width), height: Math.round(height) };
+  }
+
   function initFlipbook() {
     const bookEl = document.getElementById('book');
     if (!bookEl) return;
@@ -152,22 +186,24 @@ import { secciones } from '../data/secciones';
       pageFlip = null;
     }
 
+    const { width, height } = calculateFlipbookDimensions();
+
     pageFlip = new PageFlip(bookEl, {
-      width: 450,
-      height: 600,
+      width,
+      height,
       size: 'stretch',
-      minWidth: 315,
-      maxWidth: 1000,
-      minHeight: 420,
-      maxHeight: 1350,
+      minWidth: 300,
+      maxWidth: 1100,
+      minHeight: 400,
+      maxHeight: 1400,
       drawShadow: true,
-      flippingTime: 800,
+      flippingTime: 600,
       usePortrait: true,
       startZIndex: 0,
-      maxShadowOpacity: 0.5,
+      maxShadowOpacity: 0.4,
       showCover: true,
       mobileScrollSupport: true,
-      swipeDistance: 30,
+      swipeDistance: 20,
       clickEventForward: true,
       useMouseEvents: true,
       disableFlipByClick: false,
@@ -197,6 +233,9 @@ import { secciones } from '../data/secciones';
 
     // === Inicializar controles ===
     initControls();
+    initTouchNav();
+    initSwipeGestures();
+    initIndiceSearch();
 
     // Estado inicial
     updateIndicator(0);
@@ -216,10 +255,14 @@ import { secciones } from '../data/secciones';
   function updateButtons(pageNum: number) {
     const prevBtn = document.getElementById('flip-prev') as HTMLButtonElement | null;
     const nextBtn = document.getElementById('flip-next') as HTMLButtonElement | null;
+    const touchPrev = document.getElementById('flip-touch-prev') as HTMLButtonElement | null;
+    const touchNext = document.getElementById('flip-touch-next') as HTMLButtonElement | null;
     const total = secciones.length;
 
     if (prevBtn) prevBtn.disabled = pageNum === 0;
     if (nextBtn) nextBtn.disabled = pageNum === total - 1;
+    if (touchPrev) touchPrev.disabled = pageNum === 0;
+    if (touchNext) touchNext.disabled = pageNum === total - 1;
   }
 
   function updateProgress(pageNum: number) {
@@ -306,12 +349,119 @@ import { secciones } from '../data/secciones';
     });
   }
 
+  // === Botones de navegación táctiles flotantes ===
+  function initTouchNav() {
+    const touchPrev = document.getElementById('flip-touch-prev');
+    const touchNext = document.getElementById('flip-touch-next');
+
+    touchPrev?.addEventListener('click', () => {
+      pageFlip?.flipPrev('top');
+    });
+
+    touchNext?.addEventListener('click', () => {
+      pageFlip?.flipNext('top');
+    });
+  }
+
+  // === Gestos táctiles: swipe horizontal ===
+  // Refuerza el swipe nativo de StPageFlip en zonas donde el scroll
+  // vertical del contenido puede interferir.
+  function initSwipeGestures() {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const SWIPE_THRESHOLD = 50;
+    const SWIPE_VERTICAL_TOLERANCE = 80;
+
+    const bookEl = document.getElementById('book');
+    if (!bookEl) return;
+
+    bookEl.addEventListener('touchstart', (e: TouchEvent) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    bookEl.addEventListener('touchend', (e: TouchEvent) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      const touchEndY = e.changedTouches[0].screenY;
+      const diffX = touchStartX - touchEndX;
+      const diffY = touchStartY - touchEndY;
+
+      // Ignorar si el movimiento fue principalmente vertical (scroll de contenido)
+      if (Math.abs(diffY) > SWIPE_VERTICAL_TOLERANCE) return;
+
+      if (diffX > SWIPE_THRESHOLD) {
+        pageFlip?.flipNext('top');
+      } else if (diffX < -SWIPE_THRESHOLD) {
+        pageFlip?.flipPrev('top');
+      }
+    }, { passive: true });
+  }
+
+  // === Buscador del índice ===
+  function initIndiceSearch() {
+    const searchInput = document.getElementById('flip-indice-search');
+    const indiceItems = document.querySelectorAll('.flip-indice-item');
+
+    searchInput?.addEventListener('input', (e) => {
+      const term = (e.target as HTMLInputElement).value.toLowerCase().trim();
+
+      indiceItems.forEach((item) => {
+        const text = (item.textContent || '').toLowerCase();
+        (item as HTMLElement).style.display = text.includes(term) ? '' : 'none';
+      });
+    });
+  }
+
   // === Auto-init ===
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initFlipbook);
   } else {
     initFlipbook();
   }
+
+  // === Resize handler: recalcular dimensiones al rotar/redimensionar ===
+  let resizeTimer: number | null = null;
+  window.addEventListener('resize', () => {
+    if (!pageFlip) return;
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => {
+      const { width, height } = calculateFlipbookDimensions();
+      try {
+        pageFlip.updateState({ width, height });
+      } catch {
+        // updateState puede no existir en todas las versiones — fallback
+        const bookEl = document.getElementById('book');
+        if (bookEl) {
+          try {
+            pageFlip.destroy();
+          } catch {}
+          pageFlip = null;
+          initFlipbook();
+        }
+      }
+    }, 200);
+  });
+
+  // Recalcular al cambiar orientación en móvil
+  window.addEventListener('orientationchange', () => {
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => {
+      if (!pageFlip) return;
+      const { width, height } = calculateFlipbookDimensions();
+      try {
+        pageFlip.updateState({ width, height });
+      } catch {
+        const bookEl = document.getElementById('book');
+        if (bookEl) {
+          try {
+            pageFlip.destroy();
+          } catch {}
+          pageFlip = null;
+          initFlipbook();
+        }
+      }
+    }, 300);
+  });
 
   // Nota: NO escuchar astro:page-load aquí.
   // FlipLayout no usa ClientRouter, por lo que ese evento nunca debería dispararse.
