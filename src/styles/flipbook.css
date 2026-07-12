@@ -32,38 +32,29 @@
 }
 
 /* === Raíz de StPageFlip === */
+/* El aspect-ratio se ajusta por breakpoint para dar más altura en desktop, */
+/* donde StPageFlip muestra 2 páginas lado a lado (landscape). */
 .page-flip-root {
   position: relative;
   width: 100%;
   max-width: 900px;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 4 / 3;
 }
 
 /* === Cada hoja del flipbook === */
+/* StPageFlip convierte este elemento en .stf__item con position: absolute, */
+/* height/width fijos inline y transform-style: preserve-3d. */
+/* El overflow-y NO funciona en un elemento con preserve-3d, por eso: */
+/*  - .page-flip-page: overflow hidden (recorta el desborde) */
+/*  - .hoja-contenido: scroll real, con transform: translateZ(0) para */
+/*    crear su propio contexto de apilamiento y escapar del preserve-3d */
 .page-flip-page {
   width: 100%;
   height: 100%;
   background: var(--c-bg-secundario);
   border: 1px solid var(--c-borde);
-  overflow-y: auto;
-  overflow-x: hidden;
   position: relative;
-  padding: var(--sp-5);
-  scrollbar-width: thin;
-  scrollbar-color: var(--c-borde-activo) transparent;
-}
-
-.page-flip-page::-webkit-scrollbar {
-  width: 6px;
-}
-
-.page-flip-page::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.page-flip-page::-webkit-scrollbar-thumb {
-  background: var(--c-borde-activo);
-  border-radius: var(--r-full);
+  overflow: hidden;
 }
 
 /* === Hojas hard (portada/contraportada) === */
@@ -72,13 +63,53 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: visible;
 }
 
 /* === Contenido dentro de cada hoja === */
+/* Contenedor de scroll real. El translateZ(0) crea un nuevo contexto */
+/* de apilamiento que neutraliza el transform-style: preserve-3d del padre, */
+/* permitiendo que overflow-y: auto funcione en desktop/landscape. */
 .hoja-contenido {
   width: 100%;
   max-width: var(--content-max);
   margin: 0 auto;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--sp-5);
+  /* Padding inferior generoso: el último elemento debe ser alcanzable */
+  padding-bottom: calc(var(--sp-5) + var(--sp-6));
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-borde-activo) transparent;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  /* Clave: fuerza contexto propio, escapando del preserve-3d */
+  transform: translateZ(0);
+  /* backface-visibility evita parpadeos 3D durante el flip */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.hoja-contenido::-webkit-scrollbar {
+  width: 6px;
+}
+
+.hoja-contenido::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.hoja-contenido::-webkit-scrollbar-thumb {
+  background: var(--c-borde-activo);
+  border-radius: var(--r-full);
+}
+
+/* Hojas hard: el contenido se centra, no hace scroll */
+.page-flip-page[data-density="hard"] .hoja-contenido {
+  overflow: visible;
+  padding: 0;
+  height: auto;
+  max-height: 100%;
 }
 
 .hoja-contenido .section-header {
@@ -324,8 +355,9 @@
     max-width: 420px;
   }
 
-  .page-flip-page {
+  .hoja-contenido {
     padding: var(--sp-4);
+    padding-bottom: calc(var(--sp-4) + var(--sp-5));
   }
 
   .hoja-contenido .portada-hero__titulo {
@@ -369,6 +401,23 @@
   .hoja-contenido .grid-2-col,
   .hoja-contenido .grid-3-col {
     grid-template-columns: 1fr;
+  }
+}
+
+/* === Desktop (≥769px): aspect-ratio más alto para más espacio vertical === */
+/* En landscape, StPageFlip muestra 2 páginas. Con 3/2 en lugar de 4/3, */
+/* cada página tiene más altura para el contenido. */
+@media (min-width: 769px) {
+  .page-flip-root {
+    aspect-ratio: 3 / 2;
+    max-width: 1000px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-flip-root {
+    aspect-ratio: 16 / 10;
+    max-width: 1100px;
   }
 }
 

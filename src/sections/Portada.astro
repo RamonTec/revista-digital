@@ -1,14 +1,13 @@
 ---
-// index.astro — Portada de la revista
-// Diseño editorial con parallax, tipografía display y CTA
-import { revista, secciones } from '../data/secciones';
-const seccionesDestacadas = secciones.filter(
-  (s) => s.categoria === 'teoria' || s.categoria === 'practica'
-);
+// ============================================================
+// Portada.astro — Portada de la revista (solo hero + CTA)
+// Sin "En esta edición", sin tarjetas, sin stats
+// ============================================================
+
+import { revista } from '../data/secciones';
 ---
 
 <div class="hoja-contenido">
-<!-- === Hero portada === -->
   <section class="portada-hero">
     <div class="portada-hero__fondo" data-parallax="0.15"></div>
 
@@ -30,68 +29,49 @@ const seccionesDestacadas = secciones.filter(
         {revista.subtitulo}
       </p>
 
-      <a
-        href="/editorial-indice"
+      <button
         class="portada-hero__cta"
         data-reveal data-reveal-delay="4"
+        id="portada-cta"
+        type="button"
       >
         Comenzar a leer
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="5" y1="12" x2="19" y2="12" />
           <polyline points="12 5 19 12 12 19" />
         </svg>
-      </a>
+      </button>
     </div>
 
     <div class="portada-hero__scroll scroll-indicador" aria-hidden="true"></div>
   </section>
-
-  <!-- === Secciones destacadas === -->
-  <section class="portada-destacadas">
-    <h2 class="portada-destacadas__titulo" data-reveal>
-      En esta edición
-    </h2>
-
-    <div class="portada-destacadas__grid">
-      {seccionesDestacadas.map((s, i) => (
-        <a
-          href={s.href}
-          class="tarjeta portada-card"
-          data-reveal={i % 2 === 0 ? 'left' : 'right'}
-          data-reveal-delay={String((i % 3) + 1)}
-        >
-          <span class="portada-card__num mono texto-acento">{s.numero}</span>
-          <h3 class="portada-card__titulo">{s.titulo}</h3>
-          <p class="portada-card__desc texto-dim">{s.descripcion}</p>
-          <span class="portada-card__categoria">{s.categoria}</span>
-        </a>
-      ))}
-    </div>
-  </section>
-
-  <!-- === Stats / metadatos === -->
-  <section class="portada-meta" data-reveal>
-    <div class="portada-meta__item">
-      <span class="portada-meta__num mono texto-acento">12</span>
-      <span class="portada-meta__label texto-dim">Secciones</span>
-    </div>
-    <div class="portada-meta__item">
-      <span class="portada-meta__num mono texto-acento">04</span>
-      <span class="portada-meta__label texto-dim">Diagramas</span>
-    </div>
-    <div class="portada-meta__item">
-      <span class="portada-meta__num mono texto-acento">15+</span>
-      <span class="portada-meta__label texto-dim">Snippets SQL</span>
-    </div>
-    <div class="portada-meta__item">
-      <span class="portada-meta__num mono texto-acento">01</span>
-      <span class="portada-meta__label texto-dim">Caso práctico</span>
-    </div>
-  </section>
 </div>
 
+<script>
+  // === CTA: avanzar a la hoja 1 (Editorial) dentro del flipbook ===
+  // Si no hay flipbook (modo estático), navegar a /editorial-indice
+  function initPortadaCTA() {
+    const cta = document.getElementById('portada-cta');
+    if (!cta) return;
+
+    cta.addEventListener('click', () => {
+      const pageFlip = (window as any).__pageFlip;
+      if (pageFlip) {
+        pageFlip.flipNext('top');
+      } else {
+        window.location.href = '/editorial-indice';
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPortadaCTA);
+  } else {
+    initPortadaCTA();
+  }
+</script>
+
 <style>
-  /* === Hero === */
   .portada-hero {
     position: relative;
     min-height: 92vh;
@@ -171,7 +151,9 @@ const seccionesDestacadas = secciones.filter(
     color: var(--c-bg-primario);
     font-weight: var(--fw-semibold);
     font-size: var(--fs-md);
+    border: none;
     border-radius: var(--r-full);
+    cursor: pointer;
     transition: all var(--t-normal);
     box-shadow: var(--shadow-glow);
   }
@@ -189,109 +171,6 @@ const seccionesDestacadas = secciones.filter(
     transform: translateX(-50%);
   }
 
-  /* === Secciones destacadas === */
-  .portada-destacadas {
-    margin-top: var(--sp-9);
-    padding-top: var(--sp-7);
-    border-top: 1px solid var(--c-borde);
-  }
-
-  .portada-destacadas__titulo {
-    font-size: var(--fs-2xl);
-    margin-bottom: var(--sp-6);
-  }
-
-  .portada-destacadas__grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--sp-4);
-  }
-
-  @media (min-width: 768px) {
-    .portada-destacadas__grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .portada-destacadas__grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  .portada-card {
-    display: flex;
-    flex-direction: column;
-    gap: var(--sp-2);
-    padding: var(--sp-5);
-    background: var(--c-bg-secundario);
-    border: 1px solid var(--c-borde);
-    border-radius: var(--r-md);
-    text-decoration: none;
-    color: var(--c-texto);
-  }
-
-  .portada-card__num {
-    font-size: var(--fs-xl);
-    font-weight: var(--fw-black);
-  }
-
-  .portada-card__titulo {
-    font-size: var(--fs-lg);
-    font-weight: var(--fw-semibold);
-  }
-
-  .portada-card__desc {
-    font-size: var(--fs-sm);
-    flex: 1;
-  }
-
-  .portada-card__categoria {
-    font-size: var(--fs-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--c-texto-muted);
-    padding-top: var(--sp-2);
-    border-top: 1px solid var(--c-borde);
-  }
-
-  /* === Stats === */
-  .portada-meta {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--sp-4);
-    margin-top: var(--sp-8);
-    padding: var(--sp-6);
-    background: var(--c-bg-secundario);
-    border: 1px solid var(--c-borde);
-    border-radius: var(--r-md);
-  }
-
-  @media (min-width: 768px) {
-    .portada-meta {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-
-  .portada-meta__item {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    gap: var(--sp-1);
-  }
-
-  .portada-meta__num {
-    font-size: var(--fs-2xl);
-    font-weight: var(--fw-black);
-  }
-
-  .portada-meta__label {
-    font-size: var(--fs-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-
-  /* === Móvil === */
   @media (max-width: 639px) {
     .portada-hero__titulo {
       font-size: var(--fs-4xl);

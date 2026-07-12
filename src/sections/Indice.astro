@@ -1,7 +1,13 @@
 ---
-// editorial-indice.astro — Editorial + índice navegable
+// ============================================================
+// Indice.astro — Índice navegable de la edición
+// Click en una sección → salta a la hoja del flipbook
+// (o navega a la página estática si no hay flipbook)
+// ============================================================
+
 import SectionHeader from '../components/SectionHeader.astro';
-import { secciones, revista } from '../data/secciones';
+import { secciones } from '../data/secciones';
+
 const categorias = [
   { id: 'apertura', label: 'Apertura', icono: '◈' },
   { id: 'teoria', label: 'Teoría', icono: '◆' },
@@ -11,85 +17,20 @@ const categorias = [
 ---
 
 <div class="hoja-contenido">
-<SectionHeader
-    numero="01"
-    titulo="Editorial"
-    descripcion="Bienvenida a la primera edición de BDD Revista Digital"
+  <SectionHeader
+    numero="02"
+    titulo="Índice"
+    descripcion="Mapa de navegación de la edición"
     categoria="apertura"
   />
 
-  <!-- === Editorial === -->
-  <article class="editorial">
-    <div data-reveal>
-      <p>
-        Bienvenido a la primera edición de <strong>{revista.nombre}</strong>,
-        una publicación digital pensada para desarrolladores, arquitectos de
-        software y estudiantes que buscan profundizar en el mundo de las
-        <strong>bases de datos</strong> y el <strong>desarrollo dirigido
-        por comportamiento</strong> (BDD).
-      </p>
-    </div>
-
-    <div data-reveal data-reveal-delay="1">
-      <p>
-        Esta revista nace de una convicción simple: el software de calidad
-        comienza por entender el <em>comportamiento</em> antes que la
-        implementación, y el <em>dato</em> bien modelado es el cimiento
-        sobre el que todo sistema robusto se sostiene.
-      </p>
-    </div>
-
-    <div data-reveal data-reveal-delay="2">
-      <p>
-        En esta edición recorreremos un camino completo: desde los
-        fundamentos teóricos del BDD y la arquitectura de datos, hasta un
-        <strong>caso práctico integral</strong> que cubre el modelado, la
-        normalización y la implementación en SQL. Cada sección incluye
-        diagramas, código y ejercicios pensados para la práctica.
-      </p>
-    </div>
-
-    <div data-reveal data-reveal-delay="3">
-      <blockquote>
-        <p>
-          «El modelo no es la realidad, pero un buen modelo hace que la
-          realidad sea comprensible y manipulable.»
-        </p>
-      </blockquote>
-    </div>
-
-    <div data-reveal data-reveal-delay="4">
-      <p>
-        Te invitamos a leer la revista en orden —cada sección construye
-        sobre la anterior—, pero también a saltar libremente usando el
-        índice navegable o la barra lateral. El contenido está diseñado
-        para consultarse, marcarse y volver.
-      </p>
-    </div>
-
-    <div data-reveal data-reveal-delay="5">
-      <p>
-        Que disfrutes la lectura tanto como nosotros disfrutamos
-        construyéndola.
-      </p>
-      <p class="editorial__firma texto-dim">
-        — Equipo Editorial, {revista.fecha}
-      </p>
-    </div>
-  </article>
-
-  <hr />
-
-  <!-- === Índice navegable === -->
   <section class="indice">
-    <h2 class="indice__titulo" data-reveal>Índice de la edición</h2>
-
     {categorias.map((cat, catIdx) => (
       <div class="indice-categoria" data-reveal data-reveal-delay={String(catIdx + 1)}>
-        <h3 class="indice-categoria__label">
+        <h2 class="indice-categoria__label">
           <span class="indice-categoria__icono">{cat.icono}</span>
           {cat.label}
-        </h3>
+        </h2>
 
         <ol class="indice-lista">
           {secciones
@@ -117,8 +58,6 @@ const categorias = [
       </div>
     ))}
   </section>
-
-   
 </div>
 
 <script>
@@ -131,7 +70,6 @@ const categorias = [
 
     enlaces.forEach((enlace) => {
       enlace.addEventListener('click', (e) => {
-        // Solo interceptar si estamos en el flipbook
         const pageFlip = (window as any).__pageFlip;
         if (!pageFlip) return; // modo estático: navegación normal
 
@@ -152,38 +90,17 @@ const categorias = [
     initIndiceFlipbookLinks();
   }
 
-  // Re-init tras cambios de hoja en el flipbook
   document.addEventListener('astro:page-load', initIndiceFlipbookLinks);
 </script>
 
 <style>
-  .editorial {
-    max-width: var(--content-max);
-  }
-
-  .editorial p {
-    font-size: var(--fs-md);
-    line-height: var(--lh-relaxed);
-    margin-bottom: var(--sp-4);
-  }
-
-  .editorial__firma {
-    margin-top: var(--sp-5);
-    font-style: italic;
-  }
-
-  /* === Índice === */
+  /* === Estilos base: tamaños cómodos (portrait/móvil con scroll funcional) === */
   .indice {
-    margin-top: var(--sp-7);
-  }
-
-  .indice__titulo {
-    font-size: var(--fs-2xl);
-    margin-bottom: var(--sp-6);
+    margin-top: var(--sp-5);
   }
 
   .indice-categoria {
-    margin-bottom: var(--sp-6);
+    margin-bottom: var(--sp-5);
   }
 
   .indice-categoria__label {
@@ -218,6 +135,7 @@ const categorias = [
     text-decoration: none;
     color: var(--c-texto);
     transition: all var(--t-fast);
+    cursor: pointer;
   }
 
   .indice-item__enlace:hover {
@@ -260,6 +178,54 @@ const categorias = [
     color: var(--c-acento);
   }
 
+  /* === Landscape desktop (≥769px): grid de 2 columnas + tamaños legibles === */
+  /* El grid de 2 columnas aprovecha el ancho horizontal del landscape, */
+  /* reduciendo la altura total del índice y minimizando la necesidad de scroll. */
+  /* El scroll de .hoja-contenido está habilitado en flipbook.css como respaldo. */
+  @media (min-width: 769px) {
+    .indice {
+      margin-top: var(--sp-4);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 var(--sp-5);
+      align-items: start;
+    }
+
+    .indice-categoria {
+      margin-bottom: var(--sp-4);
+    }
+
+    .indice-categoria__label {
+      font-size: var(--fs-md);
+      margin-bottom: var(--sp-2);
+      padding-bottom: var(--sp-1);
+    }
+
+    .indice-lista {
+      gap: var(--sp-2);
+    }
+
+    .indice-item__enlace {
+      padding: var(--sp-2) var(--sp-3);
+    }
+
+    .indice-item__titulo {
+      font-size: var(--fs-sm);
+    }
+
+    .indice-item__desc {
+      font-size: var(--fs-xs);
+    }
+  }
+
+  /* === Desktop grande (≥1024px): mantener 2 columnas con más respiro === */
+  @media (min-width: 1024px) {
+    .indice {
+      gap: 0 var(--sp-6);
+    }
+  }
+
+  /* === Móvil pequeño (≤639px): ocultar descripciones === */
   @media (max-width: 639px) {
     .indice-item__desc {
       display: none;

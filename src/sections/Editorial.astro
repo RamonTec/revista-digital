@@ -1,0 +1,93 @@
+---
+// ============================================================
+// Editorial.astro — Solo texto editorial de bienvenida
+// ============================================================
+
+import SectionHeader from '../components/SectionHeader.astro';
+import { revista } from '../data/secciones';
+---
+
+<div class="hoja-contenido">
+  <SectionHeader
+    numero="01"
+    titulo="Editorial"
+    descripcion="Bienvenida a la primera edición de BDD Revista Digital"
+    categoria="apertura"
+  />
+
+  <article class="editorial">
+    <div data-reveal>
+      <p>
+        Bienvenido a la primera edición de <strong>{revista.nombre}</strong>,
+        una publicación digital pensada para desarrolladores, arquitectos de
+        software y estudiantes que buscan profundizar en el mundo de las
+        <strong>bases de datos</strong> y el <strong>desarrollo dirigido
+        por comportamiento</strong> (BDD).
+      </p>
+    </div>
+
+    <div data-reveal data-reveal-delay="1">
+      <p>
+        Esta revista nace de una convicción simple: el software de calidad
+        comienza por entender el <em>comportamiento</em> antes que la
+        implementación, y el <em>dato</em> bien modelado es el cimiento
+        sobre el que todo sistema robusto se sostiene.
+      </p>
+    </div>
+
+    <div data-reveal data-reveal-delay="2">
+      <p>
+        En esta edición recorreremos un camino completo: desde los
+        fundamentos teóricos del BDD y la arquitectura de datos, hasta un
+        <strong>caso práctico integral</strong> que cubre el modelado, la
+        normalización y la implementación en SQL. Cada sección incluye
+        diagramas, código y ejercicios pensados para la práctica.
+      </p>
+    </div>
+
+    <div data-reveal data-reveal-delay="3">
+      <blockquote>
+        <p>
+          «El modelo no es la realidad, pero un buen modelo hace que la
+          realidad sea comprensible y manipulable.»
+        </p>
+      </blockquote>
+    </div>
+
+    <div data-reveal data-reveal-delay="4">
+      <p>
+        Te invitamos a leer la revista en orden —cada sección construye
+        sobre la anterior—, pero también a saltar libremente usando el
+        índice navegable. El contenido está diseñado para consultarse,
+        marcarse y volver.
+      </p>
+    </div>
+
+    <div data-reveal data-reveal-delay="5">
+      <p>
+        Que disfrutes la lectura tanto como nosotros disfrutamos
+        construyéndola.
+      </p>
+      <p class="editorial__firma texto-dim">
+        — Equipo Editorial, {revista.fecha}
+      </p>
+    </div>
+  </article>
+</div>
+
+<style>
+  .editorial {
+    max-width: var(--content-max);
+  }
+
+  .editorial p {
+    font-size: var(--fs-md);
+    line-height: var(--lh-relaxed);
+    margin-bottom: var(--sp-4);
+  }
+
+  .editorial__firma {
+    margin-top: var(--sp-5);
+    font-style: italic;
+  }
+</style>

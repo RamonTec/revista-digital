@@ -76,5 +76,10 @@ const tituloCompleto = `${titulo} — ${revista.nombre}`;
       import '../scripts/progress';
       import '../scripts/page-transitions';
     </script>
+
+    <!-- Reset scroll al top en cargas tradicionales (no solo tras View Transition swap) -->
+    <script is:inline>
+      window.scrollTo(0, 0);
+    </script>
   </body>
 </html>

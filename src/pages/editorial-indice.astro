@@ -1,7 +1,8 @@
 ---
 import RevistaLayout from '../layouts/RevistaLayout.astro';
 import NavPaginas from '../components/NavPaginas.astro';
-import EditorialIndice from '../sections/EditorialIndice.astro';
+import Editorial from '../sections/Editorial.astro';
+import Indice from '../sections/Indice.astro';
 ---
 
 <RevistaLayout
@@ -9,6 +10,7 @@ import EditorialIndice from '../sections/EditorialIndice.astro';
   seccionActiva="editorial-indice"
   descripcion="Bienvenida del editor y mapa de navegación de la edición"
 >
-  <EditorialIndice />
+  <Editorial />
+  <Indice />
   <NavPaginas actual="editorial-indice" />
 </RevistaLayout>
