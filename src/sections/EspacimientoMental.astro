@@ -23,6 +23,16 @@ import Callout from '../components/Callout.astro';
         </p>
       </blockquote>
     </div>
+
+    <div class="vector-hero" data-reveal>
+      <svg class="vector-hero__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+        <line x1="6" y1="1" x2="6" y2="4"></line>
+        <line x1="10" y1="1" x2="10" y2="4"></line>
+        <line x1="14" y1="1" x2="14" y2="4"></line>
+      </svg>
+    </div>
   </section>
 
   <hr />
@@ -245,5 +255,43 @@ import Callout from '../components/Callout.astro';
     border-radius: 0 var(--r-sm) var(--r-sm) 0;
     font-style: italic;
     margin: 0;
+  }
+
+  .vector-hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--sp-5);
+    margin: var(--sp-5) 0;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(244, 63, 94, 0.05));
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-lg);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .vector-hero::before {
+    content: '';
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background: var(--c-acento);
+    filter: blur(60px);
+    opacity: 0.15;
+    border-radius: 50%;
+  }
+
+  .vector-hero__icon {
+    width: 64px;
+    height: 64px;
+    color: var(--c-acento);
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.4));
+    transition: transform var(--t-normal);
+  }
+
+  .vector-hero:hover .vector-hero__icon {
+    transform: scale(1.1) rotate(-2deg);
   }
 </style>
