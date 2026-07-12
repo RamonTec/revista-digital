@@ -1,0 +1,14 @@
+---
+import RevistaLayout from '../layouts/RevistaLayout.astro';
+import NavPaginas from '../components/NavPaginas.astro';
+import SopaLetras from '../sections/SopaLetras.astro';
+---
+
+<RevistaLayout
+  titulo="Sopa de Letras"
+  seccionActiva="sopa-letras"
+  descripcion="Pausa interactiva: sopa de letras"
+>
+  <SopaLetras />
+  <NavPaginas actual="sopa-letras" />
+</RevistaLayout>

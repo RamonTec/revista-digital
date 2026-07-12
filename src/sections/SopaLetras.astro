@@ -1,0 +1,269 @@
+---
+// SopaLetras.astro — Juego interactivo
+import SectionHeader from '../components/SectionHeader.astro';
+---
+
+<div class="hoja-contenido">
+  <SectionHeader
+    numero="13"
+    titulo="Pausa Activa"
+    descripcion="Encuentra 5 conceptos clave sobre bases de datos en esta sopa de letras."
+    categoria="cierre"
+  />
+
+  <section class="sopa-seccion" data-reveal>
+    <div class="sopa-instrucciones">
+      <p>Haz click en las letras para seleccionarlas. Cuando selecciones todas las letras de una palabra correctamente, se marcará como encontrada.</p>
+    </div>
+
+    <div class="sopa-container">
+      <div id="sopa-grid" class="sopa-grid"></div>
+      
+      <div class="sopa-palabras">
+        <h3 class="texto-acento">Palabras a buscar:</h3>
+        <ul id="sopa-lista" class="sopa-lista">
+          <li data-word="SQL">SQL</li>
+          <li data-word="TABLA">TABLA</li>
+          <li data-word="INDICE">INDICE</li>
+          <li data-word="CLAVE">CLAVE</li>
+          <li data-word="QUERY">QUERY</li>
+        </ul>
+        <div id="sopa-mensaje" class="sopa-mensaje texto-acento">¡Todas encontradas!</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  function initSopaLetras() {
+    const gridContainer = document.getElementById('sopa-grid');
+    if (!gridContainer) return;
+    
+    // Evitar inicialización doble en navegación con ViewTransitions
+    if (gridContainer.children.length > 0) return;
+
+    const grid = [
+      ['S','Q','L','O','P','T','W','Z','M','N'],
+      ['R','X','A','F','K','A','P','V','B','Q'],
+      ['Z','I','Y','M','N','B','X','O','L','U'],
+      ['P','W','N','T','J','L','V','S','K','E'],
+      ['X','C','G','D','R','A','N','P','W','R'],
+      ['M','K','L','Z','I','O','F','H','D','Y'],
+      ['V','B','A','Q','W','C','T','R','S','L'],
+      ['O','P','G','H','N','U','E','K','J','X'],
+      ['C','L','A','V','E','Z','P','R','T','B'],
+      ['X','M','U','I','O','L','N','B','V','C']
+    ];
+
+    const words = [
+      { text: 'SQL', cells: ['0-0', '0-1', '0-2'] },
+      { text: 'TABLA', cells: ['0-5', '1-5', '2-5', '3-5', '4-5'] },
+      { text: 'INDICE', cells: ['2-1', '3-2', '4-3', '5-4', '6-5', '7-6'] },
+      { text: 'CLAVE', cells: ['8-0', '8-1', '8-2', '8-3', '8-4'] },
+      { text: 'QUERY', cells: ['1-9', '2-9', '3-9', '4-9', '5-9'] }
+    ];
+
+    let foundWords = 0;
+
+    // Generar grid
+    grid.forEach((row, r) => {
+      row.forEach((letter, c) => {
+        const cell = document.createElement('div');
+        cell.className = 'sopa-cell mono';
+        cell.textContent = letter;
+        cell.dataset.id = `${r}-${c}`;
+        gridContainer.appendChild(cell);
+      });
+    });
+
+    // Manejar clicks
+    gridContainer.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (!target.classList.contains('sopa-cell')) return;
+      if (target.classList.contains('found')) return; // Ya encontrada
+
+      target.classList.toggle('selected');
+      checkWords();
+    });
+
+    function checkWords() {
+      const selectedCells = Array.from(document.querySelectorAll('.sopa-cell.selected'));
+      const selectedIds = selectedCells.map((c: any) => c.dataset.id).sort();
+
+      words.forEach(w => {
+        const targetIds = [...w.cells].sort();
+        
+        // Check si los IDs seleccionados son exactamente los de la palabra
+        if (selectedIds.length === targetIds.length && selectedIds.every((val, index) => val === targetIds[index])) {
+          // Palabra encontrada!
+          selectedCells.forEach(c => {
+            c.classList.remove('selected');
+            c.classList.add('found');
+          });
+          
+          const li = document.querySelector(`li[data-word="${w.text}"]`);
+          if (li && !li.classList.contains('tachado')) {
+            li.classList.add('tachado');
+            foundWords++;
+          }
+          
+          if (foundWords === words.length) {
+            const msg = document.getElementById('sopa-mensaje');
+            if (msg) msg.style.display = 'block';
+          }
+        }
+      });
+    }
+  }
+
+  // Inicializar
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSopaLetras);
+  } else {
+    initSopaLetras();
+  }
+  document.addEventListener('astro:page-load', initSopaLetras);
+</script>
+
+<style>
+  .sopa-seccion {
+    margin-top: var(--sp-6);
+  }
+
+  .sopa-instrucciones {
+    font-size: var(--fs-md);
+    margin-bottom: var(--sp-6);
+    padding: var(--sp-4);
+    background: var(--c-bg-secundario);
+    border-left: 3px solid var(--c-acento);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  }
+
+  .sopa-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-8);
+    align-items: flex-start;
+  }
+
+  .sopa-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 4px;
+    background: var(--c-borde);
+    padding: 4px;
+    border-radius: var(--r-md);
+    user-select: none;
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Global class for dynamic cells */
+  :global(.sopa-cell) {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--c-bg-primario);
+    border-radius: 4px;
+    font-weight: var(--fw-bold);
+    font-size: var(--fs-lg);
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--c-texto);
+  }
+
+  :global(.sopa-cell:hover) {
+    background: var(--c-bg-secundario);
+  }
+
+  :global(.sopa-cell.selected) {
+    background: var(--c-acento);
+    color: var(--c-bg-primario);
+    transform: scale(0.95);
+  }
+
+  :global(.sopa-cell.found) {
+    background: rgba(0, 217, 163, 0.2);
+    color: #00d9a3; /* Emerald green */
+    border: 1px solid #00d9a3;
+    animation: pulse 0.5s ease;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  .sopa-palabras {
+    flex: 1;
+    min-width: 200px;
+    padding: var(--sp-5);
+    background: var(--c-bg-secundario);
+    border: 1px solid var(--c-borde);
+    border-radius: var(--r-md);
+  }
+
+  .sopa-palabras h3 {
+    margin-top: 0;
+    margin-bottom: var(--sp-4);
+  }
+
+  .sopa-lista {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+
+  .sopa-lista li {
+    font-size: var(--fs-md);
+    font-weight: var(--fw-semibold);
+    padding: var(--sp-2) var(--sp-3);
+    background: var(--c-bg-primario);
+    border-radius: var(--r-sm);
+    transition: all 0.3s;
+  }
+
+  /* Global class for JS manipulation */
+  :global(.sopa-lista li.tachado) {
+    text-decoration: line-through;
+    color: var(--c-dim);
+    opacity: 0.6;
+    background: rgba(0, 217, 163, 0.05);
+  }
+
+  .sopa-mensaje {
+    display: none;
+    margin-top: var(--sp-4);
+    font-weight: var(--fw-bold);
+    font-size: var(--fs-lg);
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 639px) {
+    :global(.sopa-cell) {
+      width: 30px;
+      height: 30px;
+      font-size: var(--fs-md);
+    }
+    
+    .sopa-container {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .sopa-palabras {
+      width: 100%;
+    }
+  }
+</style>
